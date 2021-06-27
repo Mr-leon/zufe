@@ -1,0 +1,588 @@
+
+<div id="page-content">
+	<div class="col-sm-3 eq-box-sm">
+		<div class="panel" id="leftPanel" style="overflow: auto;height: calc(100vh - 20px);">
+			<div class="panel-body">
+				<ul id="treeDemo" class="ztree"></ul>
+				<ul id="treeDemo1" class="ztree"></ul>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-9 eq-box-sm">
+		<div class="panel ">
+			<div class="panel-body">
+				<div class="col-sm-4" id="usernameSearch">
+					<input class="form-control" id="usernameSearchInput" type="text" placeholder="用户登录名">
+				</div>
+				<div class="col-sm-4" id="nameSearch">
+					<input class="form-control" id="nameSearchInput" type="text" placeholder="用户姓名">
+				</div>
+				<a id="add" class="btn btn-primary data-toolbar" onclick="addGroup()" href="javascript:void(0);"><i class="demo-pli-add"></i> 添加分组</a>
+				<table id="pageTable" class="demo-add-niftycheck" data-toolbar="#nameSearch,#usernameSearch,#del,#add" data-show-toggle="true" data-show-columns="true" data-page-list="[5, 10, 20]" data-page-size="5" data-pagination="true"></table>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="editModalLabel">添加自定义分组</h4>
+			</div>
+			<div class="modal-body">
+				<form id="editForm">
+					<div class="row">
+						<div class="form-group form-group-padding">
+							<label class="col-md-2 control-label">分组名称</label>
+							<div class="col-md-9">
+								<input id="title" type="text" name="title" class="form-control">
+							</div>
+						</div>
+
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-danger" id="cancelBtn" onclick="cancelGroup();">取消</button>
+				<button class="btn btn-mint" id="saveBtn" onclick="saveGroup();">保存</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="addModalLabel">添加自分组用户</h4>
+			</div>
+			<div class="modal-body">
+				<form id="editForm">
+					<input type="hidden" name="addUserId" id="addUserId">
+					<div class="row">
+						<div class="form-group form-group-padding">
+							<label class="col-md-2 control-label">分组名称</label>
+							<div class="col-md-9">
+								<div class="col-sm-10">
+									<select class="selectpicker input-xlarge" style="width:200px;" data-live-search="true" id="groupId" name="groupId">
+										<option value="">请选择分组</option>
+									</select>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-danger" id="cancelBtn" onclick="cancelAdd();">取消</button>
+				<button class="btn btn-mint" id="saveBtn" onclick="saveGroupUser();">保存</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+
+	var userid = '#(userid)';
+	console.log(userid);
+	var log, className = "dark";
+	var orgid = '#(orgid)';
+	var groupid = '';
+	var col = [ {
+		field : 'checked',
+		checkbox : true,
+		align : 'center'
+	}, {
+		field : 'id',
+		title : 'id',
+		align : 'center'
+	}, {
+		field : 'username',
+		title : '用户登录名',
+		align : 'center'
+	}, {
+		field : 'name',
+		title : '用户名称',
+		align : 'center'
+	}, {
+		field : 'sex',
+		title : '性别',
+		align : 'center',
+		formatter : function(value, row, index) {
+			if (value == "1") {
+				return "男";
+			} else {
+				return "女";
+			}
+		}
+	}, {
+		field : 'orgname',
+		title : '所属单位',
+		align : 'center'
+	}, {
+		field : 'mobile',
+		title : '电话',
+		align : 'center'
+	}, {
+		field : 'email',
+		title : '邮箱',
+		align : 'center'
+	}, {
+		field : 'position',
+		title : '职位',
+		align : 'center'
+	}, {
+		field : 'control',
+		title : '操作',
+		align : 'left',
+		width : '180',
+		formatter : function(value, row, index) {
+			console.log(row)
+			//通过formatter可以自定义列显示的内容
+			//value：当前field的值，即id
+			//row：当前行的数据
+			var a = '<a class="label label-table label-info" href="' + ctx + '/admin/workplan/getUserWorkPlanPage?id=' + row.id + '&view=detail">工作计划</a>&nbsp;';
+			a = a + '<a class="label label-table label-success" href="' + ctx + '/admin/sys/user/getDetailPage?id=' + row.id + '&view=detail" >详细信息</a>&nbsp;';
+			if(userid != row.id && groupid == ''){
+				a = a + '<a class="label label-table label-success" onclick="addGroupUser(\'' + row.id + '\');" href="javascript:void(0);" >添加到分组</a>&nbsp;';
+			}
+			return a;
+		}
+	} ];
+	var opt = {
+		//请求方法
+		method : 'post',
+		contentType : 'application/x-www-form-urlencoded',
+		dataType : 'json',
+		//是否显示行间隔色
+		striped : true,
+		//是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+		cache : false,
+		//data-toolbar: "#demo-delete-row",
+		//是否显示分页（*）
+		pagination : true,
+		//是否启用排序
+		sortable : false,
+		//排序方式
+		sortOrder : "asc",
+		//初始化加载第一页，默认第一页
+		//我设置了这一项，但是貌似没起作用，而且我这默认是0,- -
+		//pageNumber:1,
+		//每页的记录行数（*）
+		pageSize : 10,
+		//可供选择的每页的行数（*）
+		pageList : [ 10, 25, 50, 100 ],
+		//这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+		url : ctx + "/admin/sys/user/listData",
+		//默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+		//queryParamsType:'',
+		////查询参数,每次调用是会带上这个参数，可自定义
+		queryParams : function(params) {
+			return {
+				pageNumber : (params.offset / params.limit) + 1,
+				pageSize : params.limit,
+				orgid : orgid,
+				groupid : groupid,
+				nameSearch : $("#nameSearchInput").val(),
+				usernameSearch : $("#usernameSearchInput").val()
+			};
+		},
+		//分页方式：client客户端分页，server服务端分页（*）
+		sidePagination : "server",
+		//是否显示搜索
+		search : false,
+		//Enable the strict search.
+		strictSearch : true,
+		//Indicate which field is an identity field.
+		idField : "id",
+		columns : col,
+		pagination : true,
+		paginationShowPageGo : true
+	};
+	//表格
+	function initTable() {
+		$('#pageTable').bootstrapTable(opt);
+		$('#pageTable').bootstrapTable('hideColumn', 'id');
+	}
+	function refreshTable() {
+		$("#pageTable").bootstrapTable('refresh', opt);
+		$('#pageTable').bootstrapTable('hideColumn', 'id');
+	}
+	//树
+	var setting = {
+		async : {
+			enable : true,
+			url : ctx + "/admin/sys/org/getOrgTree?orgid=" + orgid
+		},
+		callback : {
+			onClick : clickNode
+		}
+	};
+	//自定义分组
+	var selfsetting = {
+		view : {
+			addHoverDom : addHoverDom,
+			removeHoverDom : removeHoverDom,
+			selectedMulti : false
+		},
+		edit : {
+			enable : true,
+			editNameSelectAll : true,
+			showRemoveBtn : showRemoveBtn,
+			showAddBtn : showAddBtn,
+			showRenameBtn : showRenameBtn
+		},
+		async : {
+			enable : true,
+			url : ctx + "/admin/maillistgroup/getGroupTree?orgid=" + orgid
+		},
+		callback : {
+			onClick : clickGroupNode,			
+			beforeEditName: beforeEditName,
+			beforeRemove: beforeRemove,
+			beforeRename: beforeRename,
+			onRemove: onRemove,
+			onRename: onRename
+		}
+	};
+	function clickNode(event, treeId, treeNode, clickFlag) {
+		groupid = '';
+		orgid = treeNode.id;
+		//刷新表格
+		refreshTable();
+	}
+	//删除
+	function del(ids) {
+		pointLion.confimMsg("您是否要删除所选信息 ?<br/> 点击确认进行删除 , 点击取消取消该操作", null, function() {
+			//执行删除
+			var data = common_ajax.ajaxFunc("/admin/sys/user/delete", {
+				"ids" : ids
+			}, "json", null);
+			//删除结果
+			if (data.success) {
+				pointLion.alertMsg(data.message, "success", null, function() {
+					location.href = ctx + '/admin/sys/user/getListPage'; //跳转到列表页
+				});
+			} else {
+				pointLion.alertMsg(data.message, "success", null, null);
+			}
+		});
+	}
+	;
+	//查询
+	function search() {
+		var usernameSearch = $("#usernameSearchInput").val();
+		var nameSearch = $("#nameSearchInput").val();
+		var param = {
+			url : ctx + "/admin/sys/user/listData",
+			query : {
+				filters : [
+					{
+						"123" : 123
+					}
+				]
+			}
+		}
+		// 刷新表格
+		$('#pageTable').bootstrapTable('refresh', param);
+	}
+	//批量删除
+	function delSel() {
+		var data = [];
+		$("#pageTable input[type='checkbox'][name!='btSelectAll']:checked").each(function() {
+			data.push($(this).val());
+		});
+		if (data.length == 0) {
+			pointLion.alertMsg("请选择要删除的数据!", "danger", null, null);
+			return;
+		}
+		del(data.join(",")); //执行删除
+	}
+	//给用户赋值角色
+	var giveUserRoleIframe;
+	function giveUserRole(userid) {
+		var index = layer.open({
+			type : 2,
+			title : false, //不显示标题栏
+			area : [ '370px', '650px' ],
+			shade : 0.2,
+			id : 'giveUserRole', //设定一个id，防止重复弹出
+			resize : false,
+			closeBtn : false,
+			isOutAnim : false,
+			btn : [ '确定', '取消' ],
+			btnAlign : 'c',
+			content : ctx + '/admin/sys/user/getGiveUserRolePage?userid=' + userid,
+			success : function(layero) {
+				giveUserRoleIframe = window[layero.find('iframe')[0]['name']];
+			},
+			yes : function() {
+				var nodes = giveUserRoleIframe.getCheckedNodes();
+				var nodestr = [];
+				$.each(nodes, function(i, o) {
+					nodestr.push(o.id);
+				})
+				var data = nodestr.join(","); //用户缩勾选的角色
+				var result = common_ajax.ajaxFunc("/admin/sys/user/giveUserRole", {
+					"data" : data,
+					"userid" : userid
+				}, "json", null); //保存所有角色
+				if (result.success) {
+					pointLion.alertMsg("保存成功", "success", null, null);
+				} else {
+					pointLion.alertMsg("保存失败", "danger", null, null);
+				}
+				layer.closeAll();
+			}
+		});
+	}
+	var roleAuth;
+	function setRoleAuth(data) {
+		roleAuth = data;
+	}
+
+	//打开编辑页面
+	function getEditPage() {
+		location.href = "#(ctx)/admin/sys/user/getEditPage?orgid=" + orgid;
+	}
+	$(document).ready(function() {
+		$.fn.zTree.init($("#treeDemo"), setting); //初始化树
+		initTable(); //初始化表格
+		$("#usernameSearchInput,#nameSearchInput").on("blur", function() {
+			search();
+		})
+		$.fn.zTree.init($("#treeDemo1"), selfsetting); //初始化树
+	});
+
+	function addGroup() {
+		$("#title").val("");
+		$('#myModal').modal({
+			backdrop : 'static',
+			keyboard : false
+		});
+	}
+	;
+
+	function saveGroup() {
+		var data = common_ajax.ajaxFunc("/admin/maillistgroup/save", $('#editForm').serialize(), "json", null);
+		console.log($('#editForm').serialize());
+		if (data.success) {
+			pointLion.alertMsg("添加成功!", "success", "small", function() {
+				$("#myModal").modal('hide');
+				$("#title").val("");
+				location.href = ctx + '/admin/sys/user/getUserListPage'; //跳转到列表页
+			}, data);
+		} else {
+			pointLion.alertMsg(data.message, "success", "small", function() {
+				$("#savePlan").removeAttr("disabled");
+			}, data);
+		}
+	}
+
+	function cancelGroup() {
+		$("#myModal").modal('hide');
+		$("#title").val("");
+	}
+
+	function addHoverDom(treeId, treeNode) {
+		if (treeNode.level == 0) {
+			var sObj = $("#" + treeNode.tId + "_span");
+			if (treeNode.editNameFlag || $("#addBtn_" + treeNode.tId).length > 0) return;
+			var addStr = "<span class='button add' id='addBtn_" + treeNode.tId + "' title='add node' onfocus='this.blur();'></span>";
+			sObj.after(addStr);
+			var btn = $("#addBtn_" + treeNode.tId);
+			if (btn) btn.bind("click", function() {
+					var zTree = $.fn.zTree.getZTreeObj("treeDemo1");
+					zTree.addNodes(treeNode, {
+						id : (100 + newCount),
+						pId : treeNode.id,
+						name : "new node" + (newCount++)
+					});
+					return false;
+				});
+		} else {
+			return false;
+		}
+	}
+
+	function editHoverDom(treeId, treeNode) {
+		var sObj = $("#" + treeNode.tId + "_span");
+		if (treeNode.editNameFlag || $("#addBtn_" + treeNode.tId).length > 0) return;
+		var addStr = "<span class='button add' id='addBtn_" + treeNode.tId + "' title='add node' onfocus='this.blur();'></span>";
+		sObj.after(addStr);
+		var btn = $("#addBtn_" + treeNode.tId);
+		if (btn) btn.bind("click", function() {
+				var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+				zTree.addNodes(treeNode, {
+					id : (100 + newCount),
+					pId : treeNode.id,
+					name : "new node" + (newCount++)
+				});
+				return false;
+			});
+	}
+	function removeHoverDom(treeId, treeNode) {
+		$("#addBtn_" + treeNode.tId).unbind().remove();
+	}
+	;
+
+	function showRemoveBtn(treeId, treeNode) {
+		if (treeNode.level == 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	function showRenameBtn(treeId, treeNode) {
+		if (treeNode.level == 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	function showAddBtn(treeId, treeNode) {
+		return true;
+	}
+
+	function beforeEditName(treeId, treeNode) {
+		var zTree = $.fn.zTree.getZTreeObj("treeDemo1");
+		zTree.editName(treeNode);
+	}
+	function beforeRemove(treeId, treeNode) {
+		className = (className === "dark" ? "" : "dark");
+		console.log("[ beforeRemove ]&nbsp;&nbsp;&nbsp;&nbsp; " + treeNode.name);
+		var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+		zTree.selectNode(treeNode);
+		return confirm("确认删除 分组 -- " + treeNode.name + " 吗？");
+	}
+	function onRemove(e, treeId, treeNode) {
+		var param = {
+			"id" : treeNode.id,
+			"name" : treeNode.name
+		};
+		var data = common_ajax.ajaxFunc("/admin/maillistgroup/delete", param, "json", null);
+		if (data.success) {
+			/* pointLion.alertMsg("添加成功!", "success", "small", function() {
+				$("#myModal").modal('hide');
+				$("#title").val("");
+				location.href = ctx + '/admin/sys/user/getUserListPage'; //跳转到列表页
+			}, data); */
+		} else {
+			pointLion.alertMsg(data.message, "success", "small", function() {
+				$("#savePlan").removeAttr("disabled");
+			}, data);
+		}
+	}
+	function beforeRename(treeId, treeNode, newName, isCancel) {
+		console.log("[ beforeRename ], isCancel=" + isCancel);
+		className = (className === "dark" ? "" : "dark");
+		console.log((isCancel ? "<span style='color:red'>" : "") + "[ beforeRename ]&nbsp;&nbsp;&nbsp;&nbsp; " + treeNode.name + (isCancel ? "</span>" : ""));
+		if (newName.length == 0) {
+			setTimeout(function() {
+				var zTree = $.fn.zTree.getZTreeObj("treeDemo1");
+				alert("节点名称不能为空.");
+			}, 0);
+			return false;
+		}
+		if (newName.length > 12) {
+			setTimeout(function() {
+				var zTree = $.fn.zTree.getZTreeObj("treeDemo1");
+				alert("节点名称长度不能大于12个字符。");
+			}, 0);
+			return false;
+		}
+		var param = {
+			"id" : treeNode.id,
+			"name" : newName
+		};
+		var data = common_ajax.ajaxFuncAsync("/admin/maillistgroup/checkGroupName", param, "json", null, false);
+		console.log("data=" + data);
+		if (data.success) {
+			return true;
+		} else {
+			console.log("已存在相同名称分组");
+			pointLion.alertMsg("已存在相同名称分组", "success", "small", function() {
+				$("#savePlan").removeAttr("disabled");
+			}, data);
+			return false;
+		}
+		
+	}
+	function onRename(e, treeId, treeNode, isCancel) {
+		var param = {
+			"id" : treeNode.id,
+			"name" : treeNode.name
+		};
+		var data = common_ajax.ajaxFunc("/admin/maillistgroup/update", param, "json", null);
+		if (data.success) {
+			/* pointLion.alertMsg("添加成功!", "success", "small", function() {
+				$("#myModal").modal('hide');
+				$("#title").val("");
+				location.href = ctx + '/admin/sys/user/getUserListPage'; //跳转到列表页
+			}, data); */
+		} else {
+			pointLion.alertMsg(data.message, "success", "small", function() {
+				$("#savePlan").removeAttr("disabled");
+			}, data);
+		}
+	}
+	
+	function addGroupUser(userId){
+        $('#addModal').modal({backdrop: 'static', keyboard: false});
+        $("#addUserId").val(userId);
+        //加载仓库列表
+        $.ajax({
+			url : ctx + "/admin/maillistgroup/listUserGroup",
+			dataType : "json",
+			type : 'POST',
+			data : {
+			},
+			success : function(data) {
+				console.log(data);
+				if(data){
+					var html = '<option value="">请选择分组</option>';
+					for(var i = 0; i < data.length; i ++){
+						var depot = data[i];
+						html += '<option value="' + depot.id + '">' + depot.name + '</option>'
+					}
+					$("#groupId").html(html);
+                    $('.selectpicker').selectpicker('refresh');//加载select框选择器
+				}
+			}
+		});
+    }
+    
+
+	function cancelAdd() {
+		$("#addModal").modal('hide');
+	}
+	
+	function saveGroupUser() {
+		var sto =$("#groupId option:selected"); //获取选中的项
+		var groupId = $('#groupId').val();
+		var userId = $("#addUserId").val();
+		var param = {
+			"groupId" : groupId,
+			"userId" : userId
+		};
+		var data = common_ajax.ajaxFunc("/admin/maillistgroup/saveGroupUser", param, "json", null);
+		if (data.success) {
+			 pointLion.alertMsg("添加成功!", "success", "small", function() {
+				$("#addModal").modal('hide');
+				location.href = ctx + '/admin/sys/user/getUserListPage'; //跳转到列表页
+			}, data);
+		} else {
+			pointLion.alertMsg(data.message, "success", "small", function() {
+				$("#savePlan").removeAttr("disabled");
+			}, data);
+		}
+	}
+	
+	
+	function clickGroupNode(event, treeId, treeNode, clickFlag) {
+		groupid = treeNode.id;
+		//刷新表格
+		refreshTable();
+	}
+</script>

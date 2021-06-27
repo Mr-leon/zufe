@@ -1,0 +1,153 @@
+<div id="page-content">
+    <div class="col-lg-12">
+        <div class="panel">
+            <div class="panel-heading">
+                <h3 class="panel-title" style="text-align: right;">
+                    #@installPJaxGoBackBtn()
+                    填写信息
+                </h3>
+            </div>
+            <div class="panel-body">
+                <h3 class="panel-title" style="text-align: right">
+                    #(name)
+                </h3>
+            </div>
+            <form id="editForm" class="panel-body form-horizontal form-padding">
+                <div class="form-group">
+                    <label class="col-md-2 control-label">补录季度:</label>
+                    <div class="col-md-4">
+                        <select id="cycle" name="ecExamineSon.frequency" class="selectpicker"></select>
+                    </div>
+                </div>
+                <input type="hidden" name="ecExamineSon.mid" class="form-control" value="#(mid)">
+                <input type="hidden" name="ecExamineSon.eid" class="form-control" value="#(e.id)">
+                <!--                <input type="hidden" name="ecExamineSon.frequency" class="form-control" value="#(frequency)">-->
+                <input type="hidden" id="subtext" name="ecExamineSon.oid" class="form-control" value="#(oid)">
+                <input type="hidden" id="memo" name="ecExamineSon.memo" class="form-control" value="">
+
+                <div class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-8 col-sm-offset-3">
+                            <button class="btn btn-primary" type="submit">保存
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    function resetVali() {
+        if (!$("#editForm").data('bootstrapValidator').isValid()) {
+            $("#editForm").data('bootstrapValidator').resetForm();
+        }
+    }
+
+    var mid = '#(mid)';
+    var eid = '#(e.id)';
+
+    //保存
+    function save() {
+        var num = $(":selected").text().substring(0, 1);
+        var data = common_ajax.ajaxFunc("/admin/examine/arSaveToJD?num=" + num, $('#editForm').serialize(), "json", null);
+        if (data.success) {
+            pointLion.alertMsg("保存成功", "success", "small", function () {
+                location.href = ctx + '/admin/examine/getARListPage?iid=#(iid)&mid=#(mid)&oid=#(oid)';
+            }, data);
+        } else {
+            pointLion.alertMsg(data.message, "danger", "small", function () {
+                $(".btn").removeAttr("disabled");
+            }, data);
+        }
+    }
+
+    var eTextStr = "#(e?e.e_text:'')";
+
+    function addText() {
+        var eTextArr = [];
+        var text = $("#subtext");
+        var html = "";
+        eTextArr = eTextStr.split("|");
+        for (var i = 0; i < eTextArr.length; i++) {
+            html += '<div class="form-group"> ';
+            html += '<label class="col-md-2 control-label">' + eTextArr[i] + '</label>';
+            html += '<div class="col-md-6">';
+            html += '<input type="text" class="form-control someText">';
+            html += '</div></div>';
+        }
+        text.after(html);
+    }
+
+    $(document).ready(function () {
+        //提交
+        selectInto();
+        addText();
+        $('#editForm').bootstrapValidator({
+            fields: {
+                "ecExamineSon.frequency": {
+                    validators: {
+                        notEmpty: {
+                            message: "请选择补录季度"
+                        }
+                    }
+                }
+            }
+        }).on("success.form.bv", function (e) {
+            var j = 0;
+            $(".someText").each(function (i, o) {
+                if ($.trim($(o).val()).length == 0 || $(o).val() == "") {
+                    j++;
+                }
+            })
+            if (j > 0) {
+                pointLion.alertMsg("录入数据不能为空", "danger", "small", function () {
+                    $(".btn").removeAttr("disabled");
+                });
+            } else {
+                checkText();
+                save();
+            }
+            return false;//阻止表单跳转
+        });
+    });
+
+    function selectInto() {
+        $.ajax({
+            url: ctx + "/admin/auxiliary/getJDALl",
+            dataType: "json",
+            type: 'POST',
+            data: {
+                eid: eid,
+                mid: mid
+            },
+            success: function (data) {
+                console.log(data);
+                if (data) {
+                    var html = '<option value="" selected>请选择补录季度</option>';
+                    for (var i = 0; i < data.length; i++) {
+                        var o = data[i];
+                        html += '<option value="' + o.frequency + '">' + o.auxiliary + '季度</option>'
+                    }
+                    console.log(html);
+                }
+                $("#cycle").html(html);
+                $('#cycle').selectpicker('refresh');
+            }
+        });
+    }
+
+    function checkText() {
+        var eTextArr = [];
+        eTextArr = eTextStr.split("|");
+        var texts = [];
+        $(".someText").each(function (i, o) {
+            var name = eTextArr[i];
+            var signAgainReq = {};
+            signAgainReq[name] = $(o).val();
+            texts.push(signAgainReq);
+        })
+        var e_text = JSON.stringify(texts);
+        $("#memo").val(e_text);
+    }
+</script>

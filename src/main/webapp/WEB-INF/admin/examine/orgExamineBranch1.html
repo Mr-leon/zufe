@@ -1,0 +1,124 @@
+<div id="page-content">
+    <div class="col-lg-12">
+        <div class="panel">
+            <div class="panel-heading">
+                <h3 class="panel-title" style="text-align: right;">
+                    #@installPJaxGoBackBtn()
+                    审核
+                </h3>
+            </div>
+            <form id="editForm" class="panel-body form-horizontal form-padding">
+                <input type="hidden" name="ecExamineSon.id" class="form-control" value="#(id)">
+                <input type="hidden" name="ecExamineSon.eid" class="form-control" value="#(eid)">
+                <input type="hidden" name="ecExamineSon.mid" class="form-control" value="#(mid)">
+                <input type="hidden" name="ecExamineSon.statue" class="form-control" value="2">
+                <div class="form-group">
+                    <label class="col-md-1 control-label">考核项名称:</label>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" disabled value="#(ename)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">上传文件名:</label>
+                    <div class="col-md-9">
+                        <input id="file_name" type="text" class="form-control" disabled >
+                    </div>
+                    <a onclick="location.href='#(ctx)/admin/examine/downloadTemp?file=#(file_name)'" class="btn btn-info">下载
+                    </a>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">本次得分:</label>
+                    <div class="col-md-9">
+                        <input id="fractionCheck" oninput="fractionCheck()" type="text" class="form-control" name="ecExamineSon.fraction" value="#(fraction)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">填写人:</label>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" disabled value="#(uname)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">填写日期:</label>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" disabled value="#(date_write)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">审核人:</label>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" disabled value="#(euname)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">审核日期:</label>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" disabled value="#(date_examine)">
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-8 col-sm-offset-3">
+                            <button class="btn btn-primary" type="submit">审核</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    var euname = '#(euname)'
+    var date_examine = '#(date_examine)'
+    var uname = '#(uname)'
+    var date_write = '#(date_write)'
+    var file_name = '#(file_name)'
+    var fraction = '#(fraction)'
+    var ename = '#(ename)'
+    var eid = '#(eid)'
+    var mid = '#(mid)'
+    var id = '#(id)'
+
+
+
+    function fractionCheck() {
+        var fractionStr = $("#fractionCheck").val();
+        var reg = /^\d+(\.\d+)?$/;
+        if (!reg.test(fractionStr)) {
+            pointLion.alertMsg("分数只能为非负数", "danger", "small", function () {
+                $(".btn").attr("disabled", "disabled");
+            });
+        } else if (fractionStr > fraction || fractionStr < 0) {
+            pointLion.alertMsg("修改分不可超过本次得分且不能小于0", "danger", "small", function () {
+                $(".btn").attr("disabled", "disabled");
+            });
+        } else {
+            $(".btn").removeAttr("disabled");
+        }
+    }
+
+    $(document).ready(function () {
+        $("#file_name").val(file_name.substring(file_name.lastIndexOf("/") + 1, file_name.length))
+        $('#editForm').bootstrapValidator({
+            fields: {}
+        }).on("success.form.bv", function (e) {
+            save();
+            return false;
+        });
+
+    });
+
+    function save() {
+        var data = common_ajax.ajaxFunc("/admin/examineson/toExamine", $('#editForm').serialize(), "json", null);
+        if (data.success) {
+            pointLion.alertMsg("审核成功", "success", "small", function () {
+                location.href = ctx + '/admin/examine/getOrgExamineBranchListPage?mid=' + mid;
+            }, data);
+        } else {
+            pointLion.alertMsg(data.message, "danger", "small", function () {
+                $(".btn").removeAttr("disabled");
+            }, data);
+        }
+    }
+</script>

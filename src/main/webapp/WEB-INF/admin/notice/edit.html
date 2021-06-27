@@ -1,0 +1,832 @@
+<!-- 已办代码太多，单独封装一个文件 -->
+<style>
+.padding-lr10 {
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.padding-l10 {
+	padding-left: 10px;
+}
+
+.demo-icon i {
+	color: white;
+}
+
+.tab-base .nav-tabs>li {
+	width: 120px;
+}
+
+.tab-base .nav-tabs>li.active>a {
+	/* border-color: #26a69a !important; */
+	border-right: none;
+	margin-right: -1px;
+	background-color: #fff;
+	color: #000;
+	font-weight: 900;
+}
+
+.tab-base .nav-tabs>li>a {
+	border: none !important;
+}
+
+.tab-base .nav-tabs>li>a:hover {
+	/* border-color: #26a69a; */
+	border-right: none;
+	margin-right: -1px;
+	background-color: #fff;
+	color: #000;
+	font-weight: 900;
+	border: none !important;
+}
+</style>
+<style>
+ol, ul, li {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/*body {
+    font-family: Georgia, sans-serif;
+    padding: 40px;
+}*/
+
+div#container {
+    margin: auto;
+}
+
+a {
+    color: #000000;
+}
+
+em {
+    busy .gif font-style: italic;
+}
+
+h1 {
+    font-size: 12px;
+    margin-bottom: 40px;
+}
+
+h2 {
+    color: #C0C0C0;
+    font-size: 12px;
+    margin: 20px 0;
+}
+
+ol#examples {
+    list-style-type: square;
+    margin-left: 20px;
+}
+
+    ol#examples li {
+        line-height: 1.4em;
+        margin-bottom: 20px;
+    }
+
+form img {
+    display: none;
+    margin: 5px 0 0 10px;
+    vertical-align: top;
+}
+
+form.mf_busy img {
+    display: inline;
+}
+
+pre {
+    line-height: 1.4em;
+}
+
+/*** Manifest ***/
+
+/* Manifest container that wraps the elements and now acts as, and should be
+   styled as, the input. */
+div.mf_container {
+    border: 1px solid #ddd;
+    cursor: text;
+    display: inline-block;
+    width: 89%;
+    background: #fff;
+    border-radius: 3px;
+}
+
+    /* Ordered list for displaying selected items. */
+    div.mf_container ol.mf_list {
+        display: inline;
+    }
+
+        /* Selected item, regardless of state (highlighted, selected). */
+        div.mf_container ol.mf_list li.mf_item {
+            cursor: pointer;
+            display: inline-block;
+            margin: 2px;
+            padding: 2px 4px 3px;
+            font-size: 12px;
+            vertical-align: top;
+            margin-top: 6px;
+        }
+
+.mf_itemError {
+    color: red;
+}
+
+/* Selected item that's highlighted by mouseover. */
+div.mf_container ol.mf_list li.mf_item.mf_highlighted {
+    background-color: #E0E0E0;
+}
+
+/* Selected item that's selected by click or keyboard. */
+div.mf_container ol.mf_list li.mf_item.mf_selected {
+    background-color: #C0C0C0;
+}
+
+/* Remove link. */
+div.mf_container ol.mf_list li.mf_item a.mf_remove {
+    color: #E0E0E0;
+    margin-left: 10px;
+    text-decoration: none;
+}
+
+/* Remove link that's highlighted. */
+div.mf_container ol.mf_list li.mf_item.mf_highlighted a.mf_remove {
+    color: #FFFFFF;
+}
+
+/* Remove link that's selected. */
+div.mf_container ol.mf_list li.mf_item.mf_selected a.mf_remove {
+    color: #FFFFFF;
+}
+
+/* Actual input, styled to be invisible within the container. */
+div.mf_container input.mf_input {
+    border: 0;
+    font: inherit;
+    /* font-size: 100%; */
+    margin: 2px;
+    outline: none;
+    padding: 4px;
+    font-size: 12px;
+    color: #333;
+}
+
+/*** Marco Polo ***/
+
+/* Ordered list for display results. */
+ol.mp_list {
+    background-color: #FFFFFF;
+    border-left: 1px solid #C0C0C0;
+    border-right: 1px solid #C0C0C0;
+    overflow: hidden;
+    position: absolute;
+    width: 498px;
+    z-index: 99999;
+}
+
+    /* Each list item, regardless of success, error, etc. */
+    ol.mp_list li {
+        border-bottom: 1px solid #C0C0C0;
+        padding: 4px 4px 5px 9px;
+    }
+
+        /* Each list item from a successful request. */
+        ol.mp_list li.mp_item {
+        }
+
+        /* Each list item that's selectable. */
+        ol.mp_list li.mp_selectable {
+            cursor: pointer;
+        }
+
+        /* Currently highlighted list item. */
+        ol.mp_list li.mp_highlighted {
+            background-color: #E0E0E0;
+        }
+
+        /* When a request is made that returns zero results. */
+        ol.mp_list li.mp_no_results {
+        }
+
+        /* When a request is made that doesn't meet the 'minChars' length option. */
+        ol.mp_list li.mp_min_chars {
+        }
+
+        /* When a request is made that fails during the ajax request. */
+        ol.mp_list li.mp_error {
+        }
+
+</style>
+<div class="panel-heading">
+	<h3 class="panel-title" style="text-align: right;">
+		#@installPJaxGoBackBtn() 
+		#@installAttachment(o?o.id:'')
+	</h3>
+</div>
+<div id="page-content">
+	<div class="col-sm-12">
+		<!-- 工作台Start -->
+		<div class="panel ">
+			<div class="panel-body" style="padding: 0 !important;">
+				<div class="tab-content">
+					<!-- 已办Start -->
+					<div id="havedonelistPanel" class="tab-pane fade in active">
+						<div class="tab-base tab-stacked-left" style="margin-top: 5px;">
+						#if(view=="detail")
+							<ul class="nav nav-tabs">
+								<li class="active"><a data-toggle="tab" href="#havedone_AmsDispose" aria-expanded="true">通知公告详情</a></li>
+								<li class=""><a data-toggle="tab" href="#havedone_ContractApply" aria-expanded="false">公告查看记录</a></li>
+							</ul>
+						#end
+							<div class="tab-content" style="padding-left: 0 !important;">
+								<div id="havedone_AmsDispose" class="tab-pane fade active in">
+									<div id="page-content">
+										<div class="col-sm-12 eq-box-sm">
+											<div class="panel">
+												<div class="panel-body" style="padding-left: 0 !important;">
+													<div class="bootstrap-table">
+														<div class="fixed-table-container" style="padding-bottom: 0px;">
+															<div class="fixed-table-body">
+																<div class="fixed-table-loading" style="top: 42px; display: none;">正在努力地加载数据中，请稍候……</div>
+																	<div class="col-lg-12" style="padding-left: 0 !important;">
+																		<div class="panel">
+																			<form id="editForm" class="panel-body form-horizontal form-padding"  style="padding-left: 0 !important;">
+																				<input type="hidden" id="notice_id" name="djNotice.id" value="#(o?o.id:'')">
+																				<div class="form-group">
+																					<label class="col-md-2 control-label">标题</label>
+																					<div class="col-md-10">
+																						<input type="text" name="djNotice.title" class="form-control" value="#(o?o.title:'')" #if(view== "detail") readonly #end /> 
+																						<small class="help-block">请输入公告标题</small>
+																					</div>
+																				</div>
+																				<div class="form-group">
+																					<label class="col-md-2 control-label">主题（副标题）</label>
+																					<div class="col-md-10">
+																						<input type="text" name="djNotice.sub_title" class="form-control" value="#(o?o.sub_title:'')" #if(view== "detail") readonly #end /> 
+																						<small class="help-block">请输入公告主题（副标题）</small>
+																					</div>
+																				</div>
+																				<div class="form-group">
+																					<label class="col-md-2 control-label">通知到单位</label>
+																					<div class="col-md-10">
+																						<div class="input-group mar-btm">
+																							<input type="hidden" id="toOrgid" name="djNotice.to_org_id" value="#(o?o.to_org_id:'')" /> 
+																							#if(view == "detail")
+																					        	<input type="text" id="toOrgNameHi" name="djNotice.to_org_name" value="#(o?o.to_org_name:'')" readonly class="form-control" />
+																					        #end
+																					    	#if(view != "detail") 
+																								<input type="hidden" id="toOrgNameHi" name="djNotice.to_org_name" value="#(o?o.to_org_name:'')" class="form-control" /> 
+																								<input type="text" id="toOrgName" name="to_org_name" style="width: 100%;" autocomplete="off" />
+																					        #end
+																							<span class="input-group-btn"> 
+																								#if(view != "detail")
+																									<button class="btn btn-primary" type="button" onclick="selectManyOrg()">选择</button> 
+																								#end
+																							</span>
+																						</div>
+																						#if(view!="detail") 
+																							<small class="help-block">请选择</small> 
+																						#end
+																					</div>
+																				</div>
+																				<div class="form-group">
+																					<label class="col-md-2 control-label">起草人</label>
+																					<div class="col-md-4">
+																						<input type="hidden" name="djNotice.user_id" value="#(o?o.user_id:'')"> 
+																						<input type="text" name="djNotice.sender_name" value="#(o?o.sender_name:'')" readonly class="form-control">
+																					</div>
+																					<div class="col-md-4">
+																						<input type="hidden" name="djNotice.org_id" value="#(o?o.org_id:'')"> 
+																						<input type="text" name="djNotice.sender_org_name" value="#(o?o.sender_org_name:'')" readonly class="form-control">
+																					</div>
+																				</div>
+
+																				<div class="form-group">
+																					<label class="col-md-2 control-label" style="text-align: right;">公告正文</label>
+
+																					<div class="col-md-10">
+																						<input type="hidden" name="djNotice.content" id="content">
+																						<div id="demo-summernote">#(o?o.content:'')</div>
+																					</div>
+																				</div>
+
+																				<input type="hidden" id="checkedOrgNode" value=""> #if(view!="detail")
+																				<div class="panel-footer">
+																					<div class="row">
+																						<div class="col-sm-9 col-sm-offset-3">
+																							<button class="btn btn-warning" type="reset">重置</button>
+																							<button class="btn btn-primary" type="button" onclick="doSave()">保存</button>
+																						</div>
+																					</div>
+																				</div>
+																				#end
+																			</form>
+																		</div>
+																</div>
+																<script>
+																	function save() {
+																		var data = common_ajax.ajaxFunc("/admin/notice/save", $('#editForm').serialize(), "json", null);
+																		if (data.success) {
+																			pointLion.alertMsg("保存成功!", "success", "small", function() {
+																				location.href = ctx + '/admin/notice/getListPage'; //跳转到列表页
+																			}, data);
+																		} else {
+																			pointLion.alertMsg(data.message, "danger", "small", function() {
+																				$(".btn").removeAttr("disabled");
+																			}, data);
+																		}
+																	}
+																	//表单校验
+																	function formValidate() {
+																		$('#editForm').bootstrapValidator({
+																			excluded : [ ":disabled" ],
+																			fields : {
+																				"djNotice.title" : {
+																					validators : {
+																						notEmpty : {
+																							message : '*通知公告标题不能为空'
+																						},
+																						stringLength : {
+																							max : 50,
+																							message : '*通知公告长度必须小于50'
+																						}
+																					}
+																				},
+																				"djNotice.to_org_id" : {
+																					validators : {
+																						notEmpty : {
+																							message : '*请选择通知单位'
+																						}
+																					}
+																				}
+																			}
+																		}).bootstrapValidator('validate');
+																	}
+																	//进行保存
+																	function doSave() {
+																		var content = $("#demo-summernote").summernote('code');
+																		$("#content").val(content);
+																		var validator = formValidate(); //表单校验
+																		var va = $("#editForm").data('bootstrapValidator').isValid();
+																		if (va) {
+																			save();
+																		}
+																	}
+																	//选择通知到单位
+																	function selectManyOrg() {
+																		djOrgSelect.selectManyOrg(function(orgNode) {
+																			var orgidArr = [];
+																			var orgnameArr = [];
+																			var hisId = $("#toOrgid").val().split(",");
+																			var hisName = $("#toOrgNameHi").val().split(",");
+																			console.log(hisId);
+																			for(var k = 0; k < hisId.length; k ++){
+																				$('#toOrgName').manifest('remove', {id : hisId[k], name : hisName[k]});
+																			}
+																			$.each(orgNode, function(i, d) {
+																				if(d != null){
+																					console.log(d)
+																					if(d.id){
+																						orgidArr.push(d.id);
+																						orgnameArr.push(d.name);
+																						$('#toOrgName').manifest('add', {id : d.id, name : d.name});
+																					}
+																				}
+																			});
+																			$("#checkedOrgNode").val(orgidArr.filter(function(e){return e}).join(","));
+																			console.log(1);
+																			console.log($("#checkedOrgNode").val());
+																			$("#toOrgid").val(orgidArr.filter(function(e){return e}).join(","));
+																			$("#toOrgNameHi").val(orgnameArr.filter(function(e){return e}).join(","));
+																			//重新校验
+																			if ($("#editForm").data('bootstrapValidator')) {
+																				$("#editForm").data('bootstrapValidator').destroy();
+																				$('#editForm').data('bootstrapValidator', null);
+																			}
+																			formValidate();
+																		});
+																	}
+																	//页面初始化
+																	$(document).ready(function() {
+																		$('#demo-summernote').summernote({
+																			toolbar : [
+																				[ 'style', [ 'style', 'bold', 'italic', 'underline', 'clear' ] ],
+																				[ 'font', [ 'strikethrough', 'superscript', 'subscript' ] ],
+																				[ 'fontname', [ 'fontname' ] ],
+																				[ 'fontsize', [ 'fontsize' ] ],
+																				[ 'color', [ 'color' ] ],
+																				[ 'para', [ 'ul', 'ol', 'paragraph' ] ],
+																				[ 'height', [ 'height' ] ],
+																				[ 'table', [ 'table' ] ],
+																				[ 'insert', [ 'link', 'picture', 'video' ] ],
+																				[ 'view', [ 'codeview', 'fullscreen' ] ]
+																			],
+																			lang : 'zh-CN',
+																			dialogsFade : true,
+																			dialogsInBody : true,
+																			disableDragAndDrop : false,
+																			minHeight : '500px'
+																		});
+																		var type = "#(view)";
+																		if (type == "detail") {
+																			$('#demo-summernote').summernote('disable');
+																		}
+																		$('#toOrgName').manifest({ 
+																          	formatDisplay: function (data, $item, $mpItem) {
+																            	return data.name;
+																          	},
+																          	formatValue: function (data, $value, $item, $mpItem) {
+																           		return data.id;
+																          	},
+																        	marcoPolo: {
+																    			url: ctx + "/admin/sys/org/getOrgNameByName",
+																    			formatItem: function (data) {
+																      				return '"' + data.name + '"';
+																    			},
+																                formatData: function (data) {
+																                    return data;
+																                },
+																                minChars: 2,
+																    		},
+																    		required : true,
+																    		onAdd : function(data, $item, initial){
+																    			console.log(data)
+																				var idData = $("#toOrgid").val().split(",").filter(function(e){return e});
+																				var nameData = $("#toOrgNameHi").val().split(",").filter(function(e){return e});
+																				var flag = false;
+																				for(var i = 0; i < idData.length; i ++){
+																					if(idData[i] == data.id){
+																						flag = true
+																					}
+																				}
+																				if(!flag){
+																					idData.push(data.id);
+																					nameData.push(data.name);
+																					$("#toOrgid").val(idData.join(","));
+																					$("#toOrgNameHi").val(nameData.join(","));
+																				}
+																    		},
+																    		onRemove : function(data, $item){
+																    			console.log(data)
+																				var idData = $("#toOrgid").val().split(",").filter(function(e){return e});
+																				var nameData = $("#toOrgNameHi").val().split(",").filter(function(e){return e});
+																				var flag = false;
+																				for(var i = 0; i < idData.length; i ++){
+																					if(idData[i] == data.id){
+																						idData.splice(i, 1);
+																						nameData.splice(i, 1);
+																						break;
+																					}
+																				}
+																				console.log(idData.filter(function(e){return e}));
+																				$("#toOrgid").val(idData.filter(function(e){return e}).join(","));
+																				$("#toOrgNameHi").val(nameData.filter(function(e){return e}).join(","));
+																    		}
+																    	});
+																    	var hisId = $("#toOrgid").val().split(",");
+																		var hisName = $("#toOrgNameHi").val().split(",");
+																		console.log(hisId);
+																		for(var i = 0; i < hisId.length; i ++){
+																			if('' != hisId[i])
+																			$('#toOrgName').manifest('add', {id : hisId[i], name : hisName[i]});
+																		}
+																	});
+																</script>
+															</div>
+															<div class="fixed-table-footer" style="display: none;">
+																<table>
+																	<tbody>
+																		<tr></tr>
+																	</tbody>
+																</table>
+															</div>
+															<div class="fixed-table-pagination" style="display: none;"></div>
+														</div>
+													</div>
+													<div class="clearfix"></div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div id="havedone_ContractApply" class="tab-pane fade">
+									<div id="page-content">
+										<div class="col-sm-12 eq-box-sm">
+											<div class="panel">
+												<div class="panel panel-search">
+													<div class="panel-body">
+														<div class="form-inline">
+															<div class="form-group">
+																<input id="userName" placeholder="用户姓名" class="form-control">
+															</div>
+															<div class="form-group">
+																<select id="ifSign" class="selectpicker" title="签收状态">
+																	<option value="">全部</option>
+																	<option value="0">未签收</option>
+																	<option value="1">已签收</option>
+																</select>
+															</div>
+															<div class="form-group">
+																<div class="input-group date form_datetime">
+																	<input id="startTime" placeholder="签收开始时间" class="form-control"> <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+																</div>
+															</div>
+															<div class="form-group">
+																<div class="input-group date form_datetime">
+																	<input id="endTime" placeholder="签收结束时间" class="form-control"> <span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+																</div>
+															</div>
+															<div class="form-group">
+																<button class="btn btn-primary" type="button" onclick="searchTable()">搜索</button>
+															</div>
+														</div>
+													</div>
+												</div>
+												<div class="panel ">
+													<div class="panel-body">
+														<!-- <a id="del" class="btn btn-danger data-toolbar" onclick="delSel()" href="javascript:void(0);"><i class="demo-pli-cross"></i> 批量删除</a> -->
+														<table id="pageTable" class="demo-add-niftycheck" data-toolbar="" data-search="true" data-show-refresh="true" data-show-toggle="true" data-show-columns="true" data-sort-name="id" data-page-list="[5, 10, 20]" data-page-size="5" data-pagination="true" data-show-pagination-switch="true"></table>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<script>
+										var notice_id = $("#notice_id").val();
+										var col = [ {
+											field : 'id',
+											title : 'id',
+											align : 'center'
+										}, {
+											field : 'title',
+											title : '公告标题',
+											align : 'center'
+										}, {
+											field : 'sender_name',
+											title : '发布用户',
+											align : 'center'
+										}, {
+											field : 'sender_orgname',
+											title : '发布单位',
+											align : 'center'
+										}, {
+											field : 'publish_time',
+											title : '发布时间',
+											align : 'center'
+										}, {
+											field : 'username',
+											title : '接收用户',
+											align : 'center'
+										}, {
+											field : 'if_sign',
+											title : '是否签收',
+											align : 'center',
+											formatter : function(value, row, index) {
+												if (value == '0') { //未提交
+													return "未签收";
+												} else {
+													return "已签收";
+												}
+											}
+										}, {
+											field : 'sign_time',
+											title : '签收时间',
+											align : 'center'
+										} ];
+										var opt = {
+											//请求方法
+											method : 'get',
+											//是否显示行间隔色
+											striped : true,
+											//是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）     
+											cache : false,
+											//data-toolbar: "#demo-delete-row",
+											//是否显示分页（*）  
+											pagination : true,
+											//是否启用排序  
+											sortable : false,
+											//排序方式 
+											sortOrder : "asc",
+											//初始化加载第一页，默认第一页
+											//我设置了这一项，但是貌似没起作用，而且我这默认是0,- -
+											//pageNumber:1,   
+											//每页的记录行数（*）   
+											pageSize : 10,
+											//可供选择的每页的行数（*）    
+											pageList : [ 10, 25, 50, 100 ],
+											//这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据  
+											url : ctx + "/admin/noticeuser/listData",
+											//默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+											//queryParamsType:'',   
+											////查询参数,每次调用是会带上这个参数，可自定义                         
+											queryParams : function(params) {
+												return {
+													pageNumber : (params.offset / params.limit) + 1,
+													pageSize : params.limit,
+													id : notice_id
+												};
+											},
+											//分页方式：client客户端分页，server服务端分页（*）
+											sidePagination : "server",
+											//是否显示搜索
+											search : false,
+											//Enable the strict search.    
+											strictSearch : true,
+											//Indicate which field is an identity field.
+											idField : "id",
+											columns : col,
+											pagination : true,
+											paginationShowPageGo : true,
+											paginationShowPageGo : true
+										};
+									
+										//表格
+										function initTable() {
+											$('#pageTable').bootstrapTable(opt);
+											$('#pageTable').bootstrapTable('hideColumn', 'id');
+									
+										}
+										function refreshTable() {
+											$("#pageTable").bootstrapTable('refresh', opt);
+											$('#pageTable').bootstrapTable('hideColumn', 'id');
+										}
+										//删除
+										function del(ids) {
+											pointLion.confimMsg("您是否要删除所选公告 ?<br/> 点击确认进行删除 , 点击取消取消该操作", null, function() {
+												//执行删除
+												var data = common_ajax.ajaxFunc("/admin/notice/delete", {
+													"ids" : ids
+												}, "json", null);
+												//删除结果
+												if (data.success) {
+													pointLion.alertMsg(data.message, "success", null, function() {
+														location.href = ctx + '/admin/notice/getListPage'; //跳转到列表页
+													});
+												} else {
+													pointLion.alertMsg(data.message, "success", null, null);
+												}
+											});
+										}
+										;
+										//发布
+										function publish(id) {
+											pointLion.confimMsg("您将要发布该公告！<br/><span style='color:green;'>被通知人将会收到该通知！<br/>您将无法进行修改和删除！！！</span> <br/>点击确认进行提交 , 点击取消取消该操作", null, function() {
+												var data = common_ajax.ajaxFunc("/admin/notice/publish", {
+													"id" : id
+												}, "json", null);
+												if (data.success) {
+													pointLion.alertMsg(data.message, "success", null, function() {
+														location.href = ctx + '/admin/notice/getListPage'; //跳转到列表页
+													});
+												}
+											});
+										}
+										//取回
+										function callBack(id) {
+											pointLion.confimMsg("您将要取回该公告！取回将可以对公告进行修改和删除！<br/><span style='color:red;'>取回之后被通知人将无法查看该公告！<br/>取回之后如果进行修改，重新发布之后，被通知人将会重新收到“签收”通知！</span> <br/>点击确认进行取回 , 点击取消取消该操作", null, function() {
+												//执行删除
+												var data = common_ajax.ajaxFunc("/admin/notice/callBack", {
+													"id" : id
+												}, "json", null);
+												//删除结果
+												if (data.success) {
+													pointLion.alertMsg(data.message, "success", null, function() {
+														location.href = ctx + '/admin/notice/getListPage'; //跳转到列表页
+													});
+												} else {
+													pointLion.alertMsg(data.message, "danger", null, null);
+												}
+											});
+										}
+										//查询
+										function searchTable() {
+											var startTime = $("#startTime").val();
+											var endTime = $("#endTime").val();
+											var userName = $("#userName").val();
+											var ifSign = $("#ifSign").val();
+											var param = {
+												query : {
+													"startTime" : startTime,
+													"endTime" : endTime,
+													"userName" : userName,
+													"ifSign" : ifSign
+												}
+											}
+											// 刷新表格
+											$('#pageTable').bootstrapTable('refresh', param);
+										}
+										$(document).ready(function() {
+											$('.form_datetime').datepicker({
+												format : 'yyyy-mm-dd',
+												weekStart : 1,
+												todayBtn : 1,
+												autoclose : 1,
+												language : 'zh-CN',
+												todayHighlight : 1,
+												forceParse : 0,
+												clearBtn : true
+											}).on('changeDate', null);
+											initTable(); //初始化
+										});
+									</script>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- 已办End -->
+				</div>
+			</div>
+			<!-- panel-body end -->
+		</div>
+		<!-- 工作台End -->
+	</div>
+</div>
+<script type="text/javascript">
+	$(document).ready(function() {});
+	/***
+	 * 办理任务
+	 */
+	var nowTask;
+	function doTask(taskid, id, defkey, o) {
+		layer.open({
+			type : 2,
+			title : false, //不显示标题栏
+			area : [ '1000px', '620px' ],
+			shade : 0.2,
+			id : 'selectOneMenu', //设定一个id，防止重复弹出
+			resize : false,
+			closeBtn : false,
+			isOutAnim : false,
+			btnAlign : 'c',
+			content : ctx + '/admin/workflow/flowtask/getDoTaskPage?taskid=' + taskid + '&id=' + id + '&defkey=' + defkey,
+			success : function(layero) {
+				nowTask = o;
+			}
+		});
+	}
+	function successCompleteTask() {
+		$(nowTask).parents("p").remove();
+		var todoListCount = $(".todoListCount").text();
+		$(".todoListCount").text(todoListCount - 1);
+	}
+	//查看通知公告
+	function viewNotice(id) {
+		var thisLay; //弹出层
+		layer.open({
+			type : 2,
+			title : false, //不显示标题栏
+			area : [ '900px', '620px' ],
+			shade : 0.2,
+			id : 'selectOneMenu', //设定一个id，防止重复弹出
+			resize : false,
+			closeBtn : false,
+			isOutAnim : false,
+			btn : [ '签收', '取消' ],
+			btnAlign : 'c',
+			content : ctx + '/admin/notice/viewNotice?id=' + id,
+			success : function(layero) {
+				thisLay = window[layero.find('iframe')[0]['name']];
+			},
+			yes : function() {
+				thisLay.pointLion.confimMsg("您将要签收该公告！<br/><span style='color:green;'>签收之后公告发布人员可知晓您签收状态和时间！</span> <br/>点击确认进行签收 , 点击取消取消该操作", null, function() {
+					var data = common_ajax.ajaxFunc("/admin/notice/sign", {
+						"id" : id
+					}, "json", null);
+					if (data.success) {
+						layer.closeAll();
+						pointLion.alertMsg(data.message, "success", null, null);
+					} else {
+						pointLion.alertMsg(data.message, "success", null, null);
+					}
+				});
+			}
+		});
+	}
+</script>
+

@@ -1,0 +1,92 @@
+#include("/common/include/include.html")
+<style>
+.lay-body {
+	margin-top: 52px;
+	overflow-y: auto;
+	overflow-x: unset;
+}
+
+.lay-header {
+	position: absolute;
+	top: 0px;
+	width: 100%;
+}
+</style>
+<input type="hidden" id="checkedNode" value="" />
+<div class="modal-dialog" style="width:100%">
+	<div class="modal-content" style="height: 100%;">
+		<div class="modal-header lay-header">
+			<button type="button" class="close" data-dismiss="modal"
+				onclick="{parent.layer.closeAll();}">
+				<i class="pci-cross pci-circle"></i>
+			</button>
+			<h4 class="modal-title">选择单位</h4>
+		</div>
+
+		<div class="modal-body lay-body">
+			<ul id="treeDemo" class="ztree"></ul>
+		</div>
+	</div>
+</div>
+
+<script>
+	//树
+	var setting = {
+		check : {
+			enable : true,
+			chkboxType : { "Y" : "", "N" : "" }
+		},
+		async : {
+			enable : true,
+			//url : ctx + "/admin/org/getOrgTreeOnlyLeaf"
+			url : ctx + "/admin/org/getOrgTree"
+		},
+		callback : {
+			onCheck : checkNode,
+			onAsyncSuccess : onAsyncSuccess
+		}
+	};
+	/***
+	* 选择树
+	**/
+	function checkNode(event, treeId, treeNode) {
+		var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+		var node = treeObj.getCheckedNodes(true);
+		parent.djOrgSelect.setManyOrgNode(node);
+	}
+	$(document).ready(function() {
+		$.fn.zTree.init($("#treeDemo"), setting); //初始化树
+		var clientH = document.body.clientHeight - 54;
+		$(".lay-body").css("height", clientH + "px");
+	});
+	function onAsyncSuccess() {
+		console.log(3);
+		var checked = $('#checkedNode').val();
+		console.log(checked);
+		//treeDemo界面中加载ztree的div
+		var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+		//alert(JSON.stringify(zTree));
+		//zTree.checkNode(zTree.getNodes()[0], true, true);//根据该节点选中
+
+		//获取所有的节点
+		var checkeds = zTree.getNodes();
+		console.log(checkeds)
+		var checkedNodes = checked.split(",");
+		//遍历所有节点
+		$(checkeds).each(function(i) {
+			console.log(zTree.getNodes()[i].id)
+			//alert(zTree.getNodes()[i].F_PID +"   "+zTree.getNodes()[i].F_NAME);
+			// alert(zTree.getNodes()[i].F_REGIONALISM_ID);
+			//判断得到  中国  这个节点 
+			for (var j=0;j<checkedNodes.length;j++) { 
+				var node = zTree.getNodeByParam("id",checkedNodes[j]);
+				console.log("node=" + node);
+				if(node){
+					zTree.checkNode(node, true, true);
+				}
+			}
+		});
+		var nodeChecked = zTree.getCheckedNodes(true);
+		parent.djOrgSelect.setManyOrgNode(nodeChecked);
+	}
+</script>

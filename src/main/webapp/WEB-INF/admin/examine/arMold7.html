@@ -1,0 +1,93 @@
+<div id="page-content">
+    <div class="col-lg-12">
+        <div class="panel">
+            <h3 class="panel-title">
+                #@installPJaxGoBackBtn()
+            </h3>
+            <div class="panel-body">
+                <h3 class="panel-title" style="text-align: right">
+                    #(name)
+                </h3>
+            </div>
+            <form id="editForm" class="panel-body form-horizontal form-padding">
+                <input type="hidden" name="ecExamineSon.mid" class="form-control" value="#(mid)">
+                <input type="hidden" name="ecExamineSon.eid" class="form-control" value="#(eid)">
+                <input type="hidden" name="ecExamineSon.frequency" class="form-control" value="#(frequency)">
+                <input type="hidden" name="ecExamineSon.oid" class="form-control" value="#(oid)">
+                <div class="form-group">
+                    <label class="col-md-2 control-label">请选择上传文件:</label>
+                    <div class="col-md-9">
+                        <div id="filePicker" style="float: left;margin-right: 10px;">
+                            上传
+                        </div>
+                        <input id="accessImg" class="form-control" style="width:50%" readonly/>
+                        <input name="ecExamineSon.file_name" id="fileUrl" type="hidden"/>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-8 col-sm-offset-3">
+                            <button class="btn btn-primary" type="submit" #if(view=='detail') disabled #end>保存
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+
+
+    $('#accessImg').val(($('#fileUrl').val()).substr(($('#fileUrl').val()).lastIndexOf("/") + 1));
+
+    function resetVali() {
+        if (!$("#editForm").data('bootstrapValidator').isValid()) {
+            $("#editForm").data('bootstrapValidator').resetForm();
+        }
+    }
+
+    //保存
+    function save() {
+        var data = common_ajax.ajaxFunc("/admin/examine/arSaveToBN", $('#editForm').serialize(), "json", null);
+        if (data.success) {
+            pointLion.alertMsg("保存成功", "success", "small", function () {
+                location.href = ctx + '/admin/examine/getARListPage1?iid=#(iid)&mid=#(mid)&oid=#(oid)';
+            }, data);
+        } else {
+            pointLion.alertMsg(data.message, "danger", "small", function () {
+                $(".btn").removeAttr("disabled");
+            }, data);
+        }
+    }
+
+    $(document).ready(function () {
+        //上传图片
+        var accept = {// 只允许选择图片文件。
+            title: 'Txt',
+            extensions: 'ppt,pptx,doc,docx,xls,xlsx,wav,mp4,avi',
+            mimeTypes: 'txt/*'
+        };
+        var msg = "请选择文件";//文件类型错误时提示信息
+        pointLion.initUploader("/admin/upload/upload", accept, msg, function (data) {
+            if (data.success) {
+                console.log(data);
+                pointLion.alertMsg(data.message, "success", null, null);
+                var relativePath = data.data.path;
+                var fileName = relativePath.substring(relativePath.lastIndexOf("/") + 1, relativePath.length);
+                $('#accessImg').val(fileName);
+                $("#fileUrl").val(relativePath);
+            } else {
+                pointLion.alertMsg(data.message, "danger", null, null);
+            }
+        });
+
+        //提交
+        $('#editForm').bootstrapValidator({
+            fields: {}
+        }).on("success.form.bv", function (e) {
+            save();
+            return false;//阻止表单跳转
+        });
+    });
+</script>

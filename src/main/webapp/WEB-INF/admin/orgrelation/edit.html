@@ -1,0 +1,139 @@
+
+<style>
+	.help-block {
+		float: left;
+	}
+
+</style>
+<div id="page-content">
+	<div class="col-lg-12">
+		<div class="panel">
+			<div class="panel-heading">
+				<h3 class="panel-title" style="text-align: right;">
+					#@installPJaxGoBackBtn()
+					添加党组织转接
+				</h3>
+			</div>
+
+			<form id="editForm" class="panel-body form-horizontal form-padding">
+				<input type="hidden" id="id" name="djOrgRelation.id" class="form-control" value="#(o?o.id:'')">
+				<div class="form-group">
+					<label class="col-md-2 control-label">标题</label>
+					<div class="col-md-9">
+						<input type="text"  name="djOrgRelation.title" class="form-control" placeholder="请输入标题" value="#(o?o.title:'')">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-md-2 control-label">发布日期</label>
+					<div class="input-group date form_datetime col-md-4">
+						<input type="text" id="admission_time" name="djOrgRelation.pub_date" class="form-control"  value="#(o?o.pub_date:'')" readonly>
+						<span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-md-2 control-label">内容</label>
+					<div class="col-md-9">
+						<div id="demo-summernote" >
+
+						</div>
+						<input type="hidden" name="djOrgRelation.content" id="content">
+					</div>
+				</div>
+				<div class="panel-footer">
+					<div class="row">
+						<div class="col-sm-9 col-sm-offset-3">
+							<button class="btn btn-primary" type="submit" >保存</button>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<script>
+
+var costData = [];
+		function save(){
+			$('#content').val($('#demo-summernote').summernote('code'));
+			var data = common_ajax.ajaxFunc("/admin/orgrelation/save", $('#editForm').serialize(), "json", null);
+			if(data.success){
+				pointLion.alertMsg("保存成功!" , "success" , "small" , function(){
+					location.href = ctx+'/admin/orgrelation/getListPage';//跳转到列表页
+				});
+			}
+		}
+
+		function resetVali(){
+			if(!$("#editForm").data('bootstrapValidator').isValid()) {
+		        $("#editForm").data('bootstrapValidator').resetForm();
+		    }
+		}
+		$(document).ready(function() {
+		$('.form_datetime').datepicker({format: 'yyyy-mm-dd',weekStart: 1,todayBtn:  1,autoclose: 1,language:  'zh-CN',todayHighlight: 1,forceParse: 0}).on('changeDate',function(){
+				resetVali();
+			});
+			var accept = {// 只允许选择图片文件。
+			        title: 'Images',
+			         extensions: 'gif,jpg,jpeg,bmp,png',
+			        mimeTypes: 'image/*'
+			    };
+			var msg = "请选择图片文件";//文件类型错误时提示信息
+			pointLion.initUploader("/admin/upload/upload", accept, msg, function(data) {
+				if (data.success) {
+					console.log(data);
+					pointLion.alertMsg(data.message, "success", null, null);
+					var relativePath = data.data.path + data.data.filename;
+				    $('#accessImg').val(data.data.filename);
+					$("#fileUrl").val(relativePath);
+				} else {
+					pointLion.alertMsg(data.message, "danger", null, null);
+				}
+			});
+
+		$('#demo-summernote').summernote({
+     		height : '230px'
+ 		});
+
+
+		$('#demo-summernote').summernote('code', '#(o?o.content:"")');
+		    $('#editForm').bootstrapValidator({
+		    		excluded:[":hidden"],//关键配置，表示只对于隐藏域不进行验证，其他的表单元素都要验证
+		            fields: {
+		            "djFiguresDeeds.title": {
+						    validators: {
+				                notEmpty: {
+				                    message: '*标题不能为空'
+				                },
+				                stringLength: {
+				                    max: 200,
+				                    message: '*标题太长了'
+				                }
+				            }
+		                },
+		                "djFiguresDeeds.img": {
+						    validators: {
+				                notEmpty: {
+				                    message: '*请上传图片'
+				                }
+				            }
+		                },
+		                "djFiguresDeeds.intro": {
+						    validators: {
+				                stringLength: {
+				                    max: 200,
+				                    message: '*摘要描述太长了'
+				                }
+				            }
+		                }
+
+		            }
+		        }).on("success.form.bv", function (e) {
+		            save();
+		            return false;//阻止表单跳转
+		        });
+		});
+
+
+
+
+	</script>

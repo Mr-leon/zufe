@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浙财“三对标”智慧党建系统</title>
+    #include("/common/include/include.html")
+	<link href="#(ctx)/common/css/tab/tab.css" rel="stylesheet">
+	<script src="#(ctx)/common/js/common/tab.js"></script>
+    <script src="#(ctx)/common/js/demo/nifty-demo.js"></script>
+    <script src="#(ctx)/common/plugins/morris-js/morris.min.js"></script>
+	<script src="#(ctx)/common/plugins/morris-js/raphael-js/raphael.min.js"></script>
+    <script src="#(ctx)/common/plugins/sparkline/jquery.sparkline.min.js"></script>
+    <link href="#(ctx)/common/plugins/fullcalendar/fullcalendar.min.css" rel="stylesheet">
+	<link href="#(ctx)/common/plugins/fullcalendar/nifty-skin/fullcalendar-nifty.min.css" rel="stylesheet">
+	<script src="#(ctx)/common/plugins/fullcalendar/lib/moment.min.js"></script>
+	<script src="#(ctx)/common/plugins/fullcalendar/lib/jquery-ui.custom.min.js"></script>
+	<script src="#(ctx)/common/plugins/fullcalendar/fullcalendar.min.js"></script>
+	<style>
+	.form-group-padding {
+		padding-top: 6px;
+		min-height: 34px;
+		margin-top: 6px;
+	}
+	
+	.del-button {
+		color: #fff;
+	  position: absolute;
+	  top: -15px;
+	  right: 0;
+	  border: none;
+	  background:inherit;
+	  transform: translate(-40%, 80%);
+	}
+	.pre-text {
+	    white-space: pre;
+	}
+	</style>
+</head>
+<!--Page content-->
+<!--===================================================-->
+<div id="page-content">
+
+    <div class="row">
+        <div class="col-lg-12" style="">
+
+            <!--Network Line Chart-->
+            <!--===================================================-->
+            <div id="demo-panel-network" class="panel">
+                <div class="panel-heading">
+                    <h3 class="panel-title">常用功能</h3>
+                </div>
+                <div class="panel-body">
+		            <div class="row" style="padding-top: 8px;">
+		                #for(fun:FunctionList)
+							<div class="" style="cursor:pointer;float: left;padding-right: 8px; position: relative; ">
+								<button class="del-button" onclick="delUserComFun('#(fun.menu_id)')">X</button>
+						        <div class="panel panel-info panel-colorful media middle pad-all"  style="border-radius: 5px; display: inline-block; padding: 12px; height: 42px; margin-top: 0px;" onclick="linkToPageTab('#(fun.menu_id)')">
+						            <div class="media-body" style=" display: inline;">
+						                <p class="mar-no" style="font-size: 14px; padding: 0 8px;">#(fun.name)</p>
+						            </div>
+						        </div>
+						    </div>
+						#end
+		            </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    
+
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog"
+	aria-labelledby="editModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-hidden="true">&times;</button>
+				<h4 class="modal-title" id="editModalLabel">查看工作计划</h4>
+			</div>
+			<div class="modal-body">
+				<form id="editForm">
+					<div class="row">
+						<input type="hidden" id="id" name="oaWorkPlan.id">
+						<div class="form-group form-group-padding">
+							<label class="col-md-2 control-label">计划名称：</label>
+							<div class="col-md-9" >
+								<label id="etitle" ></label>
+							</div>
+						</div>
+						<div class="form-group form-group-padding">
+							<label class="col-md-2 control-label">时间：</label>
+							<div class="col-md-9">
+								<label id="planTime" ></label>
+							</div>
+						</div>
+						<div class="form-group form-group-padding" style="height: 206px;">
+							<label class="col-md-2 control-label">计划内容：</label>
+							<div class="col-md-9">
+								<div id="eplanContent" class="pre-text"></div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-danger" id="cancelPlanBtn"
+					onclick="cancel();">返回</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+</div>
+<!--===================================================-->
+<!--End page content-->
+
+<script type="text/javascript">
+        //初始化a标签链接到tab
+        $("#mainnav-menu a.open-menu").tab();
+</script>
+
+<script>
+
+
+    // Dashboard.js
+    // ====================================================================
+    // This file should not be included in your project.
+    // This is just a sample how to initialize plugins or components.
+    //
+    // - ThemeOn.net -
+
+
+    
+
+//查看通知公告
+	function viewNotice(id){
+		var thisLay;//弹出层
+		layer.open({
+			type: 2,
+			title: false, //不显示标题栏
+			area: ['900px', '620px'],
+			shade: 0.2,
+			id: 'selectOneMenu', //设定一个id，防止重复弹出
+			resize: false,
+			closeBtn: false,
+			isOutAnim : false ,
+			btn: ['签收', '取消'],
+			btnAlign: 'c',
+			content: ctx+'/admin/notice/viewNotice?id='+id,
+			success: function(layero){
+				thisLay = window[layero.find('iframe')[0]['name']];
+			},
+			yes: function(){
+				thisLay.pointLion.confimMsg("您将要签收该公告！<br/><span style='color:green;'>签收之后公告发布人员可知晓您签收状态和时间！</span> <br/>点击确认进行签收 , 点击取消取消该操作",null,function(){
+					var data = common_ajax.ajaxFunc("/admin/notice/sign",{"id":id}, "json", null);
+					if(data.success){
+						layer.closeAll();
+						pointLion.alertMsg(data.message,"success",null,null);
+					}else{
+						pointLion.alertMsg(data.message,"success",null,null);
+					}
+				});
+			}
+		});
+	}
+	
+	//查看金彩活动
+	function viewActivity(id){
+		
+	}
+	
+	function openNewPage(url,name){
+            if(url.indexOf("?")>0){
+                url = url + "&action=openPage";
+            }else{
+                url = url + "?action=openPage";
+            }
+            
+            console.log(url);
+
+            $("#page-title .page-header").html(name);
+            $("#page-head .breadcrumb #thisPageFromMenu").html(name);
+            $("#page-head .breadcrumb #thisPageFromMenu").attr("onclick","openNewPage('"+url+"','"+name+"')");
+            $("#jfinaloa-single-page-content #singlePageIframe").attr("src",url)
+    }
+        
+    function linkToPageTab(linkUrl){
+		$("#" +linkUrl, window.parent.document)[0].click();
+	}
+
+
+	$(document).ready(function() {
+		$('#demo-external-events .fc-event').each(function() {
+			$(this).data('event', {
+				title : $.trim($(this).text()), // use the element's text as the event title
+				stick : true, // maintain when user navigates (see docs on the renderEvent method)
+				className : $(this).data('class')
+			});
+			$(this).draggable({
+				zIndex : 99999,
+				revert : true, // will cause the event to go back to its
+				revertDuration : 0 //  original position after the drag
+			});
+		});
+		$('#demo-calendar').fullCalendar({
+			header : {
+				left : 'prev,next,prevYear,nextYear today',
+				center : 'title',
+				right : 'month,basicWeek,basicDay'
+			},
+			firstDay: 1,
+			buttonText : {
+				prev : '‹', // ‹
+				next : '›', // ›
+				prevYear : '«', // «
+				nextYear : '»', // »
+				today : '今天',
+				month : '月',
+				week : '周',
+				day : '天'
+			},
+			editable: true,
+			eventLimit: true,
+			navLinks: true,
+			locale: 'zh-cn',
+			businessHours : true,
+			displayEventTime : true,
+			timeFormat : 'hh A',
+			droppable : false, // this allows things to be dropped onto the calendar
+			dayClick : function(date, allDay, jsEvent, view) {
+				/* date是点击的day的时间(如果在agenda view, 还包含时间)，在月view下点击一天时，allDay是true，
+				在agenda模式下，点击all-day的窄条时，allDay是true，点击其他的agenda view下的day则为false，
+				jsEvent就是一个普通的javascript事件，包含的是click事件的基础信息。 */
+			},
+			eventClick : function(event, jsEvent, view) {
+				var id = event._id;
+				var obj = {
+					id : id
+				}
+				$.ajax({
+					type : "post",
+					data : obj,
+					url : ctx + "/admin/workplan/getUserWorkPlanById",
+					success : function(data) {
+						console.log(data.data);
+						$("#id").val(data.data.id);
+						$("#etitle").html(data.data.title);
+						$("#eplanContent").html(data.data.plan_content);
+						$("#planTime").html(data.data.start_time + " 至 " + data.data.end_time);
+
+						$('#editModal').modal({
+							backdrop : 'static'
+						});
+					}
+				});
+			},
+			selectable : true,
+			weekNumbers : true,
+			weekNumberTitle : '周次',
+			monthNames : 		[ '一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月' ],
+			monthNamesShort : 	[ '一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月' ],
+			dayNames : 		['周日', '周一', '周二', '周三', '周四', '周五', '周六' ],
+			dayNamesShort : ['周日', '周一', '周二', '周三', '周四', '周五', '周六' ],
+			defaultDate : new Date().Format("yyyy-MM-dd"),
+			eventLimit : true, // allow "more" link when too many events
+			events : function(start, end, timezone, callback) {
+				var firstDate = new Date();
+				firstDate.setDate(1); //第一天
+				var endDate = new Date(firstDate);
+				endDate.setMonth(firstDate.getMonth() + 1);
+				endDate.setDate(0);
+				var userId = $("#userId").val();
+				var obj = {
+					userId : userId,
+					startTime : getFormatDate(firstDate),
+					endTime : getFormatDate(endDate)
+				};
+				//alert("进入到查询日程的方法里.内部")
+				$.ajax({
+					type : "post",
+					data : obj,
+					url : ctx + "/admin/workplan/getUserWorkPlan",
+					success : function(data) {
+						var events = [];
+						//alert("进入到events内部")
+						$.each(data.data, function(key, value) {
+							events.push({
+								start : value.start_time,
+								end : value.end_time,
+								title : value.title,
+								content : value.plan_content,
+								confcolor : '#ff3f3f',
+								allDay : false,
+								id : value.id,
+							});
+						});
+						callback(events);
+					}
+				});
+			},
+			eventAfterRender: function (event, element, view) {//数据绑定上去后添加相应信息在页面上
+				var fstart = moment(event.start).format('HH:mm')
+				console.log(fstart);
+            	if (view.name == "month") {//按月份
+                 } else if (view.name == "basicWeek") {//按周
+                     var evtcontent = '';
+                     evtcontent = evtcontent + '<span class="fc-content">' + fstart + " - " + event.title  + '</span><br>';
+                     evtcontent = evtcontent + '<span class="fc-content">'+ event.content + '</span>';
+     
+                     element.html(evtcontent);
+                 } else if (view.name == "basicDay") {//按日
+                     var evtcontent = '';
+                     evtcontent = evtcontent + '<span class="fc-content">' + fstart + " - " + event.title +  '</span><br>';
+                     evtcontent = evtcontent + '<span class="fc-content">'+ event.content + '</span>';
+                     element.html(evtcontent);
+                 }
+            }
+		});
+
+	});
+
+	
+
+	function cancel() {
+		$("#editModal").modal('hide');
+	}
+
+	$('#editModal').on('hidden.bs.modal', function () {
+		$("#id").val('');
+		$("#etitle").val('');
+		$("#eplanContent").val('');
+		$("#estartTime").val('');
+		$("#eendTime").val('');
+	})
+	
+
+	function getFormatStartTime(nowDate) {
+		var year = nowDate.getFullYear();
+		var month = nowDate.getMonth() + 1 < 10 ? "0" + (nowDate.getMonth() + 1) : nowDate.getMonth() + 1;
+		var date = nowDate.getDate() < 10 ? "0" + nowDate.getDate() : nowDate.getDate();
+		var hour = nowDate.getHours() < 10 ? "0" + nowDate.getHours() : nowDate.getHours();
+		var minute = nowDate.getMinutes() < 10 ? "0" + nowDate.getMinutes() : nowDate.getMinutes();
+		var second = nowDate.getSeconds() < 10 ? "0" + nowDate.getSeconds() : nowDate.getSeconds();
+		return year + "-" + month + "-" + date + " 09:00";
+	}
+
+	function getFormatEndTime(nowDate) {
+		var year = nowDate.getFullYear();
+		var month = nowDate.getMonth() + 1 < 10 ? "0" + (nowDate.getMonth() + 1) : nowDate.getMonth() + 1;
+		var date = nowDate.getDate() < 10 ? "0" + nowDate.getDate() : nowDate.getDate();
+		var hour = nowDate.getHours() < 10 ? "0" + nowDate.getHours() : nowDate.getHours();
+		var minute = nowDate.getMinutes() < 10 ? "0" + nowDate.getMinutes() : nowDate.getMinutes();
+		var second = nowDate.getSeconds() < 10 ? "0" + nowDate.getSeconds() : nowDate.getSeconds();
+		return year + "-" + month + "-" + date + " 18:00";
+	}
+
+	function getFormatDate(nowDate) {
+		var year = nowDate.getFullYear();
+		var month = nowDate.getMonth() + 1 < 10 ? "0" + (nowDate.getMonth() + 1) : nowDate.getMonth() + 1;
+		var date = nowDate.getDate() < 10 ? "0" + nowDate.getDate() : nowDate.getDate();
+		return year + "-" + month + "-" + date;
+	}
+
+
+	Date.prototype.Format = function(fmt) {
+		var o = {
+			"M+" : this.getMonth() + 1, //月份   
+			"d+" : this.getDate(), //日   
+			"H+" : this.getHours(), //小时   
+			"m+" : this.getMinutes(), //分   
+			"s+" : this.getSeconds(), //秒   
+			"q+" : Math.floor((this.getMonth() + 3) / 3), //季度   
+			"S" : this.getMilliseconds() //毫秒   
+		};
+		if (/(y+)/.test(fmt))
+			fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+		for (var k in o)
+			if (new RegExp("(" + k + ")").test(fmt))
+				fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+		return fmt;
+	}
+	//删除
+	function delUserComFun(ids) {
+		pointLion.confimMsg("您是否要删除所选功能 ?<br/> 点击确认进行删除 , 点击取消取消该操作", null, function() {
+			//执行删除
+			var data = common_ajax.ajaxFunc("/admin/commonFunction/delete", {
+				"ids" : ids
+			}, "json", null);
+			//删除结果
+			if (data.success) {
+				location.href = ctx + '/admin/home/getHomePage'; //跳转到列表页
+			} else {
+				pointLion.alertMsg(data.message, "success", null, null);
+			}
+		});
+	}
+</script>

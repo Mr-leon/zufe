@@ -1,0 +1,139 @@
+<div id="page-content">
+    <div class="col-lg-12">
+        <div class="panel">
+            <div class="panel-heading">
+                <h3 class="panel-title" style="text-align: right;">
+                    #@installPJaxGoBackBtn()
+                    审核
+                </h3>
+            </div>
+            <form id="editForm" class="panel-body form-horizontal form-padding">
+                <input type="hidden" name="ecExamineSon.id" class="form-control" value="#(id)">
+                <input type="hidden" name="ecExamineSon.eid" class="form-control" value="#(eid)">
+                <input type="hidden" name="ecExamineSon.mid" class="form-control" value="#(mid)">
+                <input type="hidden" name="ecExamineSon.statue" class="form-control" value="2">
+                <div class="form-group" id="textTop">
+                    <label class="col-md-1 control-label">考核项名称:</label>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" disabled value="#(ename)">
+                    </div>
+                </div>
+                <!-- 在这加text -->
+                <div class="form-group">
+                    <label class="col-md-1 control-label">本次得分:</label>
+                    <div class="col-md-9">
+                        <input id="fractionCheck" type="text" class="form-control" name="ecExamineSon.fraction"
+                               value="#(fraction)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">填写人:</label>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" disabled value="#(uname)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">填写日期:</label>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" disabled value="#(date_write)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">审核人:</label>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" disabled value="#(euname)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">审核日期:</label>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" disabled value="#(date_examine)">
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-8 col-sm-offset-3">
+                            <button class="btn btn-primary" type="submit">审核</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    var euname = '#(euname)'
+    var date_examine = '#(date_examine)'
+    var uname = '#(uname)'
+    var date_write = '#(date_write)'
+    var e_text = '#(e_text)'
+    var memo = '#(memo)'
+    var fraction = '#(fraction)'
+    var ename = '#(ename)'
+    var eid = '#(eid)'
+    var mid = '#(mid)'
+    var id = '#(id)'
+
+    $("#fractionCheck").focus(function () {
+        $(".btn").removeAttr("disabled");
+    });
+
+    function fractionCheck() {
+        var fractionStr = $("#fractionCheck").val();
+        var reg = /^\d+(\.\d+)?$/;
+        if (!reg.test(fractionStr)) {
+            pointLion.alertMsg("分数只能为非负数", "danger", "small", function () {
+                $(".btn").attr("disabled", "disabled");
+            });
+        } else if (fractionStr > fraction || fractionStr < 0) {
+            pointLion.alertMsg("修改分不可超过本次得分且不能小于0", "danger", "small", function () {
+                $(".btn").attr("disabled", "disabled");
+            });
+        } else {
+            save();
+            $(".btn").removeAttr("disabled");
+        }
+    }
+
+    $(document).ready(function () {
+        addText();
+        $('#editForm').bootstrapValidator({
+            fields: {}
+        }).on("success.form.bv", function (e) {
+            fractionCheck()
+            return false;
+        });
+    });
+
+    function addText() {
+        var eTextStr = e_text;
+        var memoJson = memo;
+        var eTextArr = [];
+        var text = $("#textTop");
+        var html = "";
+        eTextArr = eTextStr.split("|");
+        var memoStr = JSON.parse(memoJson);
+        for (var i = 0; i < eTextArr.length; i++) {
+            html += '<div class="form-group"> ';
+            html += '<label class="col-md-1 control-label">' + eTextArr[i] + '</label>';
+            html += '<div class="col-md-9">';
+            html += '<input type="text" class="form-control someText" value="' + memoStr[i][eTextArr[i]] + '" disabled>';
+            html += '</div></div>';
+        }
+        text.after(html);
+    }
+
+    function save() {
+        var data = common_ajax.ajaxFunc("/admin/examineson/toExamine", $('#editForm').serialize(), "json", null);
+        if (data.success) {
+            pointLion.alertMsg("审核成功", "success", "small", function () {
+                location.href = ctx + '/admin/examine/getOrgExamineBranchListPage?mid=' + mid;
+            }, data);
+        } else {
+            pointLion.alertMsg(data.message, "danger", "small", function () {
+                $(".btn").removeAttr("disabled");
+            }, data);
+        }
+    }
+</script>

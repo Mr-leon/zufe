@@ -1,0 +1,152 @@
+<div id="page-content">
+    <div className="col-sm-12 eq-box-sm">
+        <div className="panel">
+            <div className="panel ">
+                <div className="panel-body">
+                    <div class="col-sm-8">
+                        <button class="btn btn-primary" type="button" onclick="backFirst()">返回
+                        </button>
+                    </div>
+                    <h3 class="panel-title">
+                        #(i?i.name:'')考核数据录入表
+                        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                        分党委(党总支)名称:#(o?o.name:'')
+                    </h3>
+                    <table id="pageTable" className="demo-add-niftycheck" data-toolbar=""
+                           data-search="true"
+                           data-show-refresh="true"
+                           data-show-toggle="true"
+                           data-show-columns="true"
+                           data-sort-name="eid"
+                           data-page-list="[5, 10, 20]"
+                           data-page-size="5"
+                           data-pagination="true" data-show-pagination-switch="true"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function backFirst() {
+        location.href = "#(ctx)/admin/examinemain/getShowFirst";
+    }
+
+    var oid = '#(o.id)';
+    var iid = '#(i.id)';
+    var mid = '#(mid)';
+    var col = [
+        {
+            field: 'name',
+            title: '指标名称',
+            align: 'left'
+        },
+        {
+            field: 'score',
+            title: '满分',
+            align: 'center'
+        },
+        {
+            field: 'cumulative',
+            title: '年度累计得分',
+            align: 'center'
+        },
+        {
+            field: 'fraction',
+            title: '本次得分',
+            align: 'center'
+        },
+        {
+            field: 'control',
+            title: '操作',
+            align: 'left',
+            width: '200',
+            formatter: function (value, row, index) {
+                var a = '';
+                if (row.target == 0) {
+                    a = '';
+                } else {
+                    if (row.x_frequency < row.frequency) {
+                        if (row.mold == "1") {
+                            a = '<a class="label label-table label-success" href="' + ctx + '/admin/examineaverage/getMole5Page?mid=' + mid + '&oid=#(o.id)&iid=#(i.id)&eid=' + row.id + '&frequency=' + (row.x_frequency + 1) + '&name=' + row.name + '" >数据录入</a>&nbsp;';
+                        } else if (row.mold == "2") {
+                            a = '<a class="label label-table label-success" href="' + ctx + '/admin/examineaverage/getMole6Page?mid=' + mid + '&oid=#(o.id)&iid=#(i.id)&eid=' + row.id + '&frequency=' + (row.x_frequency + 1) + '&name=' + row.name + '" >数据录入</a>&nbsp;';
+                        }
+                    } else {
+                        a = ""
+                    }
+                }
+                return a;
+            }
+        }];
+    var opt = {
+        //请求方法
+        method: 'get',
+        //是否显示行间隔色
+        striped: true,
+        //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+        cache: false,
+        //data-toolbar: "#demo-delete-row",
+        //是否显示分页（*）
+        pagination: true,
+        //是否启用排序
+        sortable: false,
+        //排序方式
+        sortOrder: "asc",
+        //初始化加载第一页，默认第一页
+        //我设置了这一项，但是貌似没起作用，而且我这默认是0,- -
+        //pageNumber:1,
+        //每页的记录行数（*）
+        pageSize: 500,
+        //可供选择的每页的行数（*）
+        pageList: [500],
+        //这个接口需要处理bootstrap table传递的固定参数,并返回特定格式的json数据
+        url: ctx + "/admin/examineaverage/listData1",
+        //默认值为 'limit',传给服务端的参数为：limit, offset, search, sort, order Else
+        //queryParamsType:'',
+        ////查询参数,每次调用是会带上这个参数，可自定义
+        queryParams: function (params) {
+            return {
+                pageNumber: (params.offset / params.limit) + 1,
+                pageSize: params.limit,
+                mid: mid,
+                iid: iid,
+                oid: oid
+            };
+        },
+        //分页方式：client客户端分页，server服务端分页（*）
+        sidePagination: "server",
+        //是否显示搜索
+        search: false,
+        //Enable the strict search.
+        strictSearch: true,
+        //Indicate which field is an identity field.
+        idField: "id",
+        columns: col,
+        pagination: true, paginationShowPageGo: true
+    };
+
+    //表格
+    function initTable() {
+        $('#pageTable').bootstrapTable(opt);
+        $('#pageTable').bootstrapTable('hideColumn', 'id');
+    }
+
+    function refreshTable() {
+        $("#pageTable").bootstrapTable('refresh', opt);
+        $('#pageTable').bootstrapTable('hideColumn', 'id');
+    }
+
+    $(document).ready(function () {
+        $('.form_datetime').datepicker({
+            format: 'yyyy-mm-dd',
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            language: 'zh-CN',
+            todayHighlight: 1,
+            forceParse: 0,
+            clearBtn: true
+        }).on('changeDate', null);
+        initTable();//初始化
+    });
+</script>

@@ -1,0 +1,332 @@
+	
+	<div id="page-content">
+			<div class="col-lg-12">
+		        <div class="panel">
+		            <div class="panel-heading">
+		                <h3 class="panel-title" style="text-align: right;">
+		                	#@installPJaxGoBackBtn()
+		                	添加新工会
+		                </h3>
+		            </div>
+		            <form id="editForm" class="panel-body form-horizontal form-padding">
+						<input type="hidden" id="enterprise_type"  name="sysOrg.enterprise_type" class="form-control"  value="#(o?o.enterprise_type:'')">
+						<input type="hidden" id="industry"  name="sysOrg.industry" class="form-control"  value="#(o?o.industry:'')">
+						<input type="hidden" id="union_type"  name="sysOrg.union_type" class="form-control"  value="#(o?o.union_type:'')">
+		            	<div class="form-group">
+		                    <label class="col-md-2 control-label">父级工会</label>
+		                    <div class="col-md-3">
+		                        <div class="input-group mar-btm">
+			                        <input type="text" id="pName" value="#(p?p.name:'根目录')" readonly class="form-control">
+									<input type="hidden" id ="pId" name="sysOrg.parent_id"  value="#(p?p.id:'#root')">
+									<input type="hidden" id = "orgId" name="sysOrg.id" value="#(o?o.id:'')">
+			                        
+			                        <span class="input-group-btn">
+			                            <button class="btn btn-primary" type="button" onclick="selectOneOrg()">选择</button>
+			                        </span>
+			                    </div>
+		                    </div>
+		                    <label class="col-md-2 control-label">工会类型</label>
+		                    <div class="col-md-3">
+		                        <input type="hidden" id="type" name="sysOrg.type" class="form-control"  value="#(type)">
+		                        <input type="text" id="typeName" class="form-control"  value="#if(type=='1')工会#elseif(type=='0')部门#end" disabled="disabled">
+		                    </div>
+		                </div>
+		                #if(type=='0')
+			                <div class="form-group">
+			                    <label class="col-md-2 control-label">所属子工会</label>
+			                    <div class="col-md-4">
+			                        <input type="hidden" id="type" name="sysOrg.parent_child_company_id" class="form-control"  value="#(parentCompany?parentCompany.id:'#root')">
+			                        <input type="text" class="form-control"  value="#(parentCompany?parentCompany.name:'根目录')" disabled="disabled">
+			                    </div>
+			                </div>
+			            #end
+		                <div class="form-group">
+		                    <label class="col-md-2 control-label">工会名称</label>
+		                    <div class="col-md-3">
+		                        <input type="text" id="org_name" name="sysOrg.name" class="form-control" maxlength="32" value="#(o?o.name:'')">
+		                    </div>
+		                    <label class="col-md-2 control-label">工会编号</label>
+		                    <div class="col-md-3">
+		                        <input type="text" id="org_num" name="sysOrg.org_num" class="form-control" maxlength="32" value="#(o?o.org_num:'')">
+		                    </div>
+		                </div>
+		                <div class="form-group">
+		                    <label class="col-md-2 control-label">单位名称</label>
+		                    <div class="col-md-3">
+		                        <input type="text" id="enterprise_name" name="sysOrg.enterprise_name" class="form-control" maxlength="128" value="#(o?o.enterprise_name:'')">
+		                    </div>
+		                    <label class="col-md-2 control-label">统一社会信用代码</label>
+		                    <div class="col-md-3">
+		                        <input type="text" id="social_credit_code" name="sysOrg.social_credit_code" class="form-control" maxlength="32" value="#(o?o.social_credit_code:'')">
+		                    </div>
+		                </div>
+		                <div class="form-group">
+		                    <label class="col-md-2 control-label">经济类型</label>
+		                    <div class="col-md-3">
+								<select class="selectpicker input-xlarge" style=" width:220px;" id="itemValue1" name="itemValue1" #if(view=='detail') disabled="disabled" #end>
+									<option value="">请选择经济类型</option>
+								</select>
+		                    </div>
+		                    <label class="col-md-2 control-label">单位所属行业</label>
+		                    <div class="col-md-3">
+								<select class="selectpicker input-xlarge" style=" width:220px;" id="itemValue2" name="itemValue2" #if(view=='detail') disabled="disabled" #end>
+									<option value="">请选择所属行业</option>
+								</select>
+		                    </div>
+		                </div>
+		                <div class="form-group">
+		                    <label class="col-md-2 control-label">区/局工会</label>
+		                    <div class="col-md-3">
+		                        <input type="text" id="" name="sysOrg.db_union" class="form-control" maxlength="32" value="#(o?o.db_union:'')">
+		                    </div>
+		                    <label class="col-md-2 control-label">工会所属街镇（开发区）/二级产业公司工会</label>
+		                    <div class="col-md-3">
+		                        <input type="text" id="area" name="sysOrg.union_street" class="form-control"  maxlength="32" value="#(o?o.union_street:'')">
+		                    </div>
+		                </div>
+		                <div class="form-group">
+		                    <label class="col-md-2 control-label">单位地址</label>
+		                    <div class="col-md-5">
+		                        <input type="text" id="" name="sysOrg.address" class="form-control"  maxlength="200" value="#(o?o.address:'')">
+		                    </div>
+		                </div>
+		                <div class="form-group">
+		                    <label class="col-md-2 control-label">建会日期</label>
+		                    <div class="col-md-3">
+		                        <input type="text" id="create_date" name="sysOrg.create_date" class="form-control"  maxlength="10" value="#(o?o.create_date:'')">
+		                    </div>
+		                    <label class="col-md-2 control-label">基层工会类型</label>
+		                    <div class="col-md-3">
+								<select class="selectpicker input-xlarge" style=" width:220px;" id="itemValue3" name="itemValue3" #if(view=='detail') disabled="disabled" #end>
+									<option value="">请选择基层工会类型</option>
+								</select>
+		                    </div>
+		                </div>
+		                <div class="form-group">
+		                    <label class="col-md-2 control-label">换届日期</label>
+		                    <div class="col-md-3">
+		                        <input type="text" id="change_date" name="sysOrg.change_date" class="form-control" maxlength="10" value="#(o?o.change_date:'')">
+		                    </div>
+		                    <label class="col-md-2 control-label">工会负责人</label>
+		                    <div class="col-md-3">
+		                        <input type="text" id="principal" name="sysOrg.principal" class="form-control" maxlength="32" value="#(o?o.principal:'')">
+		                    </div>
+		                </div>
+		                <div class="form-group">
+		                    <label class="col-md-2 control-label">联系电话</label>
+		                    <div class="col-md-3">
+		                        <input type="text" id="contact_number" name="sysOrg.contact_number" class="form-control"  maxlength="20" value="#(o?o.contact_number:'')">
+		                    </div>
+		                    <label class="col-md-2 control-label">职工人数</label>
+		                    <div class="col-md-3">
+		                        <input type="text" id="staff_num" name="sysOrg.staff_num" class="form-control" maxlength="6" value="#(o?o.staff_num:'')">
+		                    </div>
+		                </div>
+		                <div class="form-group">
+		                    <label class="col-md-2 control-label">会员人数</label>
+		                    <div class="col-md-3">
+		                        <input type="text" id="membership" name="sysOrg.membership" class="form-control" maxlength="6" value="#(o?o.membership:'')">
+		                    </div>
+		                </div>
+		                <div class="panel-footer">
+		                    <div class="row">
+		                        <div class="col-sm-9 col-sm-offset-3">
+		                            <button class="btn btn-warning" type="reset">重置</button>
+		                            <button class="btn btn-primary" type="submit" >保存</button>
+		                        </div>
+		                    </div>
+		                </div>
+		            </form>
+		        </div>
+		    </div>
+	</div>
+	<script>
+		
+		function save(){
+		
+			var dctId1 = $('#itemValue1').val();
+			$("#enterprise_type").val(dctId1);
+			var dctId2 = $('#itemValue2').val();
+			$("#industry").val(dctId2);
+			var dctId3 = $('#itemValue3').val();
+			$("#union_type").val(dctId3);
+			var data = common_ajax.ajaxFunc("/admin/sys/org/save", $('#editForm').serialize(), "json", null);
+			if(data.success){
+				pointLion.alertMsg("保存成功!" , "success" , "small" , function(){
+					location.href = ctx+'/admin/sys/org/getListPage';//跳转到列表页
+				});
+			}
+		}
+		function selectOneOrg(){
+			//调用选择一个单位组件
+			pointLion.selectOneOrg(function(orgNode){
+				var thisId = $("#orgId").val();//主键
+				if(thisId==orgNode.id){
+					 layer.closeAll();
+					 pointLion.alertMsg("您不能选择自己为父级节点!" , "warning" , "small" , null);
+					 return;
+				}
+				$("#pName").val(orgNode.name);//所选单位名称
+				$("#pId").val(orgNode.id);//所选单位id
+			},null,null,null,null);
+		}
+		function valiData(pid){
+			$('#editForm').bootstrapValidator({
+	            fields: {
+	            	"sysOrg.name": {
+	                    validators: {
+	                        notEmpty: {
+	                            message: '*工会名称不能为空'
+	                        },
+	                        stringLength: {/*长度提示*/
+	                            max: 25,
+	                            message: '*工会名称长度必须小于25'
+	                        },
+	                        remote: {
+	                        	type:'POST',
+			                    message: '*同级别组织工会中，不允许有重名的单位！',
+			                    url:ctx+'/admin/sys/org/validOrgname',
+			                    data: function(validator) {
+		                               return {
+		                                   parentId: $('#pId').val(),
+		                                   orgId:$("#orgId").val()
+		                               };
+		                            },
+			                    delay:1000
+			                }
+	                    }
+	                },
+	                "sysOrg.sort": {
+	                    validators: {
+	                    	lessThan: {
+	        					inclusive:true,
+	        					value: 20,
+	        					message: '*请输入小于20的数字'
+	        				}
+	                    }
+	                },
+	                "sysOrg.description": {
+	                    validators: {
+	                    	stringLength: {
+	                            max: 2000,
+	                            message: '*工会描述信息长度必须小于2000'
+	                        }
+	                    }
+	                },
+	                "sysOrg.staff_num": {
+	                    validators: {
+	                    	digits: {
+	        					message: '*请输正整数'
+	        				}
+	                    }
+	                },
+	                "sysOrg.membership": {
+	                    validators: {
+	                    	digits: {
+	        					message: '*请输正整数'
+	        				}
+	                    }
+	                }
+	            }
+	        }).on("success.form.bv", function (e) {
+	            save();
+	            return false;//阻止表单跳转
+	        });
+		}
+		$(document).ready(function() {
+			laydate.render({
+		  		elem: '#create_date'
+			});
+			laydate.render({
+		  		elem: '#change_date'
+			});			
+			var dctId1 = $('#enterprise_type').val();
+			var dctId2 = $('#industry').val();
+			var dctId3 = $('#union_type').val();
+			
+			var pid = $("#pId").val();
+		    valiData(pid);
+		    
+		    $('#itemValue1').selectpicker({
+	            noneSelectedText: '',
+	            noneResultsText: '',
+	            liveSearch: true,
+	            size:10   //设置select高度，同时显示5个值
+	        });
+		    $('#itemValue2').selectpicker({
+	            noneSelectedText: '',
+	            noneResultsText: '',
+	            liveSearch: true,
+	            size:10   //设置select高度，同时显示5个值
+	        });
+	        //加载经济类型列表
+	        $.ajax({
+				url : ctx + "/admin/sys/dct/listDctByTypeId",
+				dataType : "json",
+				type : 'POST',
+				data : {
+					typeId : "enterprise_type"
+				},
+				success : function(data) {
+					console.log(data);
+					if(data){
+						var html = '<option value="">请选择经济类型</option>';
+						for(var i = 0; i < data.length; i ++){
+							var depot = data[i];
+							html += '<option value="' + depot.value + '">' + depot.name + '</option>'
+						}
+						console.log(html);
+						$("#itemValue1").html(html);
+						$("#itemValue1" ).selectpicker('refresh');
+	                    $('#itemValue1').selectpicker('val',dctId1);
+					}
+				}
+	        });
+	        //加载行业类别列表
+	        $.ajax({
+				url : ctx + "/admin/sys/dct/listDctByTypeId",
+				dataType : "json",
+				type : 'POST',
+				data : {
+					typeId : "industry_type"
+				},
+				success : function(data) {
+					console.log(data);
+					if(data){
+						var html = '<option value="">请选择所属行业</option>';
+						for(var i = 0; i < data.length; i ++){
+							var depot = data[i];
+							html += '<option value="' + depot.value + '">' + depot.name + '</option>'
+						}
+						console.log(html);
+						$("#itemValue2").html(html);
+						$("#itemValue2" ).selectpicker('refresh');
+	                    $('#itemValue2').selectpicker('val',dctId2);
+					}
+				}
+	        });
+	        //加载基层工会类型列表
+	        $.ajax({
+				url : ctx + "/admin/sys/dct/listDctByTypeId",
+				dataType : "json",
+				type : 'POST',
+				data : {
+					typeId : "union_type"
+				},
+				success : function(data) {
+					console.log(data);
+					if(data){
+						var html = '<option value="">请选择基层工会类型</option>';
+						for(var i = 0; i < data.length; i ++){
+							var depot = data[i];
+							html += '<option value="' + depot.value + '">' + depot.name + '</option>'
+						}
+						console.log(html);
+						$("#itemValue3").html(html);
+						$("#itemValue3" ).selectpicker('refresh');
+	                    $('#itemValue3').selectpicker('val',dctId3);
+					}
+				}
+	        });
+		});
+	</script>

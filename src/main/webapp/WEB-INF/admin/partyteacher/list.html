@@ -1,0 +1,54 @@
+<div id="page-content" xmlns="http://www.w3.org/1999/html">
+	<div class="col-lg-12">
+		<div class="panel">
+			<div class="panel">
+				<div class="panel-heading">
+					<h3 class="panel-title" style="text-align: center;">
+						教职党员数据导入
+					</h3>
+				</div>
+			</div>
+			<form id="editForm" class="panel-body form-horizontal form-padding" method="post"
+				  enctype="multipart/form-data">
+				<div class="form-group">
+					<label class="col-md-2 control-label">下载模板:</label>
+					<div class="col-md-8">
+						<button onclick="location.href='#(ctx)/admin/partyteacher/downloadTemp/'" class="btn btn-info">下载
+						</button>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-md-2 control-label">录入数据:</label>
+					<div class="col-md-8">
+						<p>请按照模板样式，录入数据</p>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-md-2 control-label">上传数据:</label>
+					<div class="col-md-8">
+						<div id="filePicker" style="float: left;margin-right: 10px;">上传</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<script>
+	$(document).ready(function () {
+		//上传文件
+		var accept = {// 只允许选择图片文件。
+			title: 'Images',
+			extensions: 'xlsx,xls',
+			mimeTypes: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel*'
+		};
+		var msg = "请选择Excel文件";//文件类型错误时提示信息
+		pointLion.initUploader("/admin/partyteacher/importExcel", accept, msg, function (data) {
+			if (data.success) {
+				pointLion.alertMsg(data.message, "success", null, null);
+			} else {
+				pointLion.alertMsg(data.message, "danger", null, null);
+			}
+		});
+
+	});
+</script>

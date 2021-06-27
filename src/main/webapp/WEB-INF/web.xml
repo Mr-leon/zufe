@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	id="JfinalUIBV3" version="3.0">
+
+	<welcome-file-list>
+		<welcome-file>/index.jsp</welcome-file>
+	</welcome-file-list>
+	<listener>
+		<listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
+	</listener>
+<!--	CAS单点登录-->
+		<filter>
+			<filter-name>CAS Single Sign Out Filter</filter-name>
+			<filter-class>org.jasig.cas.client.session.SingleSignOutFilter</filter-class>
+		</filter>
+		<filter-mapping>
+			<filter-name>CAS Single Sign Out Filter</filter-name>
+			<url-pattern>/*</url-pattern>
+		</filter-mapping>
+
+		<filter>
+			<filter-name>CASAuthenticationFilter</filter-name>
+			<filter-class>com.neusoft.cas.AuthenticationFilter</filter-class>
+		</filter>
+		<filter-mapping>
+			<filter-name>CASAuthenticationFilter</filter-name>
+			<url-pattern>/*</url-pattern>
+		</filter-mapping>
+		<filter>
+			<filter-name>CASValidationFilter</filter-name>
+			<filter-class>com.neusoft.cas.Cas20ProxyReceivingTicketValidationFilter</filter-class>
+		</filter>
+		<filter-mapping>
+			<filter-name>CASValidationFilter</filter-name>
+			<url-pattern>/*</url-pattern>
+		</filter-mapping>
+		<filter>
+			<filter-name>CASHttpServletRequestWrapperFilter</filter-name>
+			<filter-class>org.jasig.cas.client.util.HttpServletRequestWrapperFilter</filter-class>
+		</filter>
+		<filter-mapping>
+			<filter-name>CASHttpServletRequestWrapperFilter</filter-name>
+			<url-pattern>/*</url-pattern>
+		</filter-mapping>
+
+<!--	CAS单点登录-->
+		<filter>
+			<filter-name>shiro</filter-name>
+			<filter-class>org.apache.shiro.web.servlet.ShiroFilter</filter-class>
+		</filter>
+		<filter-mapping>
+			<filter-name>shiro</filter-name>
+			<url-pattern>/*</url-pattern>
+		</filter-mapping>
+
+		<filter>
+			<filter-name>jfinal</filter-name>
+			<filter-class>com.jfinal.core.JFinalFilter</filter-class>
+			<init-param>
+				<param-name>configClass</param-name>
+				<param-value>org.smartjq.config.MainConfig</param-value>
+			</init-param>
+		</filter>
+
+		<filter-mapping>
+			<filter-name>jfinal</filter-name>
+			<url-pattern>/*</url-pattern>
+		</filter-mapping>
+</web-app>

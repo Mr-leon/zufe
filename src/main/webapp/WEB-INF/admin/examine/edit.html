@@ -1,0 +1,358 @@
+<div id="page-content">
+    <div class="col-lg-12">
+        <div class="panel">
+            <div class="panel-heading">
+                <h3 class="panel-title" style="text-align: right;">
+                    #@installPJaxGoBackBtn()
+                    #if(view=='edit') 编辑#else 添加#end考核项
+                </h3>
+            </div>
+            <form id="editForm" class="panel-body form-horizontal form-padding">
+                <input id="eid" type="hidden" name="ecExamine.id" class="form-control" value="#(o?o.id:'')">
+                <input id="ecIid" type="hidden" name="ecExamine.iid" class="form-control" value="#(o?o.iid:'')">
+                <div class="form-group">
+                    <label class="col-md-1 control-label">指标名称</label>
+                    <div class="col-md-4">
+                        <select id="selectIId" class="selectpicker" name="ecExamine.iid" disabled>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">考核项名称</label>
+                    <div class="col-md-4">
+                        <input type="text" name="ecExamine.name" class="form-control" placeholder="请输入考核项名称"
+                               value="#(o?o.name:'')">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">考核项简称</label>
+                    <div class="col-md-4">
+                        <input type="text" name="ecExamine.abbr" class="form-control" placeholder="请输入考核项简称"
+                               value="#(o?o.abbr:'')">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">考核类型</label>
+                    <div class="col-md-9">
+                        <select id="selectMold" class="selectpicker" name="ecExamine.mold" onchange="e_textIsDisable()">
+                            <option value="" selected>请选择考核类型</option>
+                            <option value="1" selected>文件上传</option>
+                            <option value="2" selected>文本输入</option>
+                            <!--                            <option value="3" selected>文件上传+文本输入</option>-->
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">填写周期</label>
+                    <div class="col-md-9">
+                        <select id="selectCycle" class="selectpicker" name="ecExamine.cycle">
+                            <option value="" selected>请选择填写周期</option>
+                            <option value="1" selected>年</option>
+                            <option value="2" selected>半年</option>
+                            <option value="3" selected>季度</option>
+                            <option value="4" selected>月</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">填写周期次数</label>
+                    <div class="col-md-4">
+                        <input id="frequency" type="text" name="ecExamine.frequency" class="form-control"
+                               placeholder="请输入填写周期次数且为整数" onblur="isInt1()" value="#(o?o.frequency:'')"
+                        >
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">单次分数</label>
+                    <div class="col-md-4">
+                        <input id="fraction" type="text" name="ecExamine.fraction" class="form-control"
+                               placeholder="请输入单次分数" onblur="isDouble()" value="#(o?o.fraction:'')"
+                        >
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">总数</label>
+                    <div class="col-md-4">
+                        <input id="score" type="text" name="ecExamine.score" class="form-control"
+                               placeholder="请输入总数且为整数" onblur="isInt2()" value="#(o?o.score:'')"
+                        >
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">排序</label>
+                    <div class="col-md-4">
+                        <input id="sequence" type="text" name="ecExamine.sequence" class="form-control"
+                               placeholder="请输入排序" value="#(o?o.sequence:'')"
+                        >
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">录入对象</label>
+                    <div class="col-md-9">
+                        <select id="selectTarget" class="selectpicker" name="ecExamine.target" onchange="TargetClick()">
+                            <option value="" selected>请选择录入对象</option>
+                            <option value="0" selected>分党委</option>
+                            <option value="1" selected>党支部</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="chooseUnEableOrg" class="form-group">
+                    <label class="col-md-2 control-label">不涉及该项分党委</label>
+                    <div class="col-md-7">
+                        <div class="input-group mar-btm">
+                            <input type="text" id="oname" class="form-control" readonly value="#(oname)">
+                            <input type="hidden" id="oids" name="ecExamine.oids" class="form-control" value="#(oids)">
+                            <span class="input-group-btn">
+                                <button class="btn btn-primary" type="button" onclick="selectUnableOrg()">选择</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" id="e_textDisable">
+                    <label class="col-md-1 control-label">考核项文本项</label>
+                    <div class="col-md-4">
+                        <input id="eText" type="text" name="ecExamine.e_text" class="form-control"
+                               placeholder="请输入考核项文本项" value="#(o?o.e_text:'')">
+                        <span style="color: red">(使用|隔开)</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">重点</label>
+                    <div class="col-md-9">
+                        <select id="selectIsKey" class="selectpicker" name="ecExamine.iskey">
+                            <option value="0" selected>否</option>
+                            <option value="1" selected>是</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-1 control-label">可用</label>
+                    <div class="col-md-9">
+                        <select id="selectEnable" class="selectpicker" name="ecExamine.enable">
+                            <option value="1" selected>是</option>
+                            <option value="0" selected>否</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="row">
+                        <div class="col-sm-8 col-sm-offset-3">
+                            <!--<button class="btn btn-warning" type="reset" #if(view=='detail') disabled #end>重置</button>-->
+                            <button class="btn btn-primary" type="submit" #if(view=='detail') disabled #end>保存
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    function TargetClick() {
+        if ($('#selectTarget').val() == 0) {
+            $("#chooseUnEableOrg").show();
+        } else {
+            $("#oname").val("");
+            $("#oids").val("");
+            $("#chooseUnEableOrg").hide();
+        }
+    }
+
+    var chooseUnEableOrgIframe;
+
+    //选择用户角色
+    function selectUnableOrg() {
+        var eid = $("#eid").val();
+        var index = layer.open({
+            type: 2,
+            title: false, //不显示标题栏
+            area: ['370px', '650px'],
+            shade: 0.2,
+            id: 'selectUnableOrg', //设定一个id，防止重复弹出
+            resize: false,
+            closeBtn: false,
+            isOutAnim: false,
+            btn: ['确定', '取消'],
+            btnAlign: 'c',
+            content: ctx + '/admin/examine/chooseUnEableOrg?eid=' + eid,
+            success: function (layero) {
+                chooseUnEableOrgIframe = window[layero.find('iframe')[0]['name']];
+            },
+            yes: function () {
+                var nodes = chooseUnEableOrgIframe.getCheckedNodes();
+                var nodestr = [];
+                var nodeNameStr = [];
+                $.each(nodes, function (i, o) {
+                    nodestr.push(o.id);
+                    nodeNameStr.push(o.name);
+                })
+                var data = nodestr.join(",");//用户缩勾选的角色
+                var nameStr = nodeNameStr.join(",");//用户名字
+                $("#oids").val(data);
+                $("#oname").val(nameStr);
+                layer.closeAll();
+            }
+        });
+
+    }
+
+    function isInt1() {
+        var pattern = /^[1-9]\d*$/;
+        if (!pattern.test($("#frequency").val())) {
+            $("#frequency").val("");
+        }
+    }
+
+    function isInt2() {
+        var pattern = /^[1-9]\d*$/;
+        if (!pattern.test($("#score").val())) {
+            $("#score").val("");
+        }
+    }
+
+    function isDouble() {
+        var pattern = /^[0-9]+(\.[0-9])?$/;
+        if (!pattern.test($("#fraction").val())) {
+            $("#fraction").val("");
+        }
+    }
+
+    function e_textIsDisable() {
+        if ($('#selectMold').val() == 1 || $('#selectMold').val() == "") {
+            $("#eText").val("");
+            $("#e_textDisable").hide();
+        } else {
+            $("#e_textDisable").show();
+        }
+    }
+
+    function save() {
+        var iid = $("#ecIid").val();
+        var data = common_ajax.ajaxFunc("/admin/examine/save", $('#editForm').serialize(), "json", null);
+        if (data.success) {
+            pointLion.alertMsg("保存成功", "success", "small", function () {
+                location.href = ctx + '/admin/examine/getListPage?iid=' + iid;
+            }, data);
+        } else {
+            pointLion.alertMsg(data.message, "danger", "small", function () {
+                $(".btn").removeAttr("disabled");
+            }, data);
+        }
+    }
+
+    $(document).ready(function () {
+        getSubjectList();
+        $('#selectMold').selectpicker('val', "#(o?o.mold:'')");
+        $('#selectMold').selectpicker('refresh');
+        $('#selectCycle').selectpicker('val', "#(o?o.cycle:'')");
+        $('#selectCycle').selectpicker('refresh');
+        $('#selectTarget').selectpicker('val', "#(o?o.target:'')");
+        $('#selectTarget').selectpicker('refresh');
+        $('#selectIsKey').selectpicker('val', "#(o?o.iskey:'')");
+        $('#selectIsKey').selectpicker('refresh');
+        $('#selectEnable').selectpicker('val', "#(o?o.enable:'')");
+        $('#selectEnable').selectpicker('refresh');
+        if ($('#selectTarget').val() == 1 || $('#selectTarget').val() == "") {
+            $("#oname").val("");
+            $("#oids").val("");
+            $("#chooseUnEableOrg").hide();
+        }
+        if ($('#selectMold').val() == 1 || $('#selectMold').val() == "") {
+            $("#eText").val("");
+            $("#e_textDisable").hide();
+        }
+        $('#editForm').bootstrapValidator({
+            excluded: [":hidden"],//关键配置，表示只对于隐藏域不进行验证，其他的表单元素都要验证
+            fields: {
+                "ecExamine.name": {
+                    validators: {
+                        notEmpty: {
+                            message: '*考核项名称不能为空'
+                        },
+                        stringLength: {
+                            max: 225,
+                            message: '*考核项名称太长了'
+                        }
+                    }
+                },
+                "ecExamine.abbr": {
+                    validators: {
+                        notEmpty: {
+                            message: '*考核项简称不能为空'
+                        },
+                        stringLength: {
+                            max: 20,
+                            message: '*考核项简称长度不能超过20'
+                        }
+                    }
+                },
+                "ecExamine.mold": {
+                    validators: {
+                        notEmpty: {
+                            message: '*请选择考核类型'
+                        }
+                    }
+                }, "ecExamine.cycle": {
+                    validators: {
+                        notEmpty: {
+                            message: '*请选择填写周期'
+                        }
+                    }
+                },
+                "ecExamine.frequency": {
+                    validators: {
+                        notEmpty: {
+                            message: '*周期次数不能为空'
+                        }
+                    }
+                }, "ecExamine.fraction": {
+                    validators: {
+                        notEmpty: {
+                            message: '*单次分数不能为空'
+                        }
+                    }
+                }, "ecExamine.score": {
+                    validators: {
+                        notEmpty: {
+                            message: '*总数不能为空'
+                        }
+                    }
+                }, "ecExamine.target": {
+                    validators: {
+                        notEmpty: {
+                            message: '*请选择录入对象'
+                        }
+                    }
+                }
+            }
+        }).on("success.form.bv", function (e) {
+            save();
+            return false;//阻止表单跳转
+        });
+    });
+
+    function getSubjectList() {
+        //加载所属区域列表
+        $.ajax({
+            url: ctx + "/admin/examine/getSubjectList",
+            dataType: "json",
+            type: 'POST',
+            data: {},
+            success: function (data) {
+                console.log(data);
+                if (data) {
+                    var html = '';
+                    for (var i = 0; i < data.length; i++) {
+                        var o = data[i];
+                        html += '<option value="' + o.id + '" selected>' + o.name + '</option>'
+                    }
+                    console.log(html);
+
+                }
+                $("#selectIId").html(html);
+                $('#selectIId').selectpicker('val', "#(o?o.iid:'')");
+                $("#selectIId").selectpicker('refresh');
+            }
+        });
+    };
+</script>
