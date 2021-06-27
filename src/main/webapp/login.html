@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>登录</title>
+<!--STYLESHEET-->
+<!--=================================================-->
+#include("/common/include/include.html")
+
+<!--=================================================
+
+    REQUIRED
+    You must include this in your project.
+
+
+    RECOMMENDED
+    This category must be included but you may modify which plugins or components which should be included in your project.
+
+
+    OPTIONAL
+    Optional plugins. You may choose whether to include it in your project or not.
+
+
+    Detailed information and more samples can be found in the document.
+
+    =================================================-->
+
+
+
+
+<!-- Create your own class to load custum image [ SAMPLE ]-->
+
+
+</head>
+
+<!--TIPS-->
+<!--You may remove all ID or Class names which contain "demo-", they are only used for demonstration. -->
+
+<body>
+	<div id="container" class="cls-container">
+
+		<!-- BACKGROUND IMAGE -->
+		<!--===================================================-->
+		<div id="bg-overlay" class="bg-img" style="background-image: url(#(ctx)/common/img/bg-img/bg-img-oa.jpg)"></div>
+
+
+		<!-- LOGIN FORM -->
+		<!--===================================================-->
+		<div class="cls-content">
+			<div class="cls-content-sm panel">
+				<div class="panel-body">
+					<div class="mar-ver pad-btm">
+						<h3 class="h4 mar-no">登录</h3>
+						<p class="text-muted" style="padding-top: 8px">使用您的帐号密码进行登录</p>
+					</div>
+					<form id="login_form" action="#(ctx)/admin/login/doLogin" method="post">
+						<div class="form-group">
+							<input type="text" id="username" name="username" class="form-control" placeholder="用户名" autofocus value="#(o?o:'')">
+						</div>
+
+						<div class="checkbox pad-btm text-left hidden">
+							<input type="text" id="captcha" name="captcha" class="form-control" placeholder="验证码" style="float: left;width: 162px;margin-right: 40px;">
+							<img alt="验证码出错啦~!" src="#(ctx??)/admin/login/img">
+						</div>
+						<!-- 		                <div class="checkbox pad-btm text-left">
+		                    <input id="demo-form-checkbox" class="magic-checkbox" type="checkbox">
+		                    <label for="demo-form-checkbox">记住我</label>
+		                </div> -->
+						<button class="btn btn-primary btn-lg btn-block" onclick="login();" type="button">登&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;录</button>
+					</form>
+				</div>
+
+				<div class="pad-all">
+					<!-- 		            <a href="#" class="btn-link mar-rgt">忘记密码 ?</a>
+		            <a href="#" class="btn-link mar-lft">注册新账号</a> -->
+
+				</div>
+			</div>
+		</div>
+		<!--===================================================-->
+
+
+
+	</div>
+	<!--===================================================-->
+	<!-- END OF CONTAINER -->
+	<script>
+		var err = "#(error??)";
+		if (err) {
+			$.niftyNoty({
+				type : 'danger',
+				message : err,
+				container : 'floating',
+				timer : 50000
+				
+			});
+		}
+		window.onload = function() {
+			if (window.parent.window != window) {
+				window.top.location = "#(ctx)/admin/login";
+			}
+		}
+
+		function login() {
+			var username = $("#username").val();
+			if(username == ''){
+				$.niftyNoty({
+					type : 'danger',
+					message : "请输入用户名",
+					container : 'floating',
+					timer : 3000
+				});
+				return false;
+			}
+	      if(username != "" && username != undefined)
+				$("#login_form").submit();
+		}
+		$(function(){
+			login();
+		})
+		var inputGroup = document.getElementsByTagName("input");
+	    var inputGroupArr = Array.from(document.getElementsByTagName("input"));
+	    var iGlength = inputGroupArr.length;
+	    document.onkeypress = function(e){
+	        var e = event || e;
+	        console.log(inputGroupArr.indexOf(e.srcElement));
+	        var idx = inputGroupArr.indexOf(e.srcElement);
+	        console.log(e,e.keyCode,e.srcElement,e.which);
+	        if(e.keyCode == 13 || e.which == 13){
+	            // e.which = 9;
+	            // e.charCode = 9;
+	            // e.code = "tab";
+	            //并不能实现
+	            if(idx == iGlength - 1){//表明已经是最后一个输入框
+	            	document.getElementsByTagName("form")[0].submit();           
+	            }else{
+	                inputGroup[idx+1].focus(); 
+	            }
+	            e.preventDefault();
+	        }
+	    }
+	</script>
+
+</body>
+</html>
+
